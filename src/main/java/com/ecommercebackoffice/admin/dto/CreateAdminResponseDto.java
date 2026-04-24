@@ -2,9 +2,11 @@ package com.ecommercebackoffice.admin.dto;
 
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 public class CreateAdminResponseDto {
 
     private final Long id;

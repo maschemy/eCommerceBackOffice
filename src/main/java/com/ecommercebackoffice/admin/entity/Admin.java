@@ -12,17 +12,24 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
-@SQLDelete(sql = "UPDATE orders SET deletedAt = NOW() WHERE id = ?")
-@SQLRestriction("deletedAt IS NULL")
+@SQLDelete(sql = "UPDATE orders SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 @Entity
 @Getter
 @Table(name="admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Admin extends BaseEntity {
 
+    @Column(name = "approved_at")
     private LocalDateTime approvedAt;
+
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Column(name = "rejected_at")
     private LocalDateTime rejectedAt;
+
+    @Column(name = "reject")
     private String reject;
 
     @Id
