@@ -1,14 +1,11 @@
 package com.ecommercebackoffice.admin.service;
 
-import com.ecommercebackoffice.admin.dto.CreateAdminRequestDto;
-import com.ecommercebackoffice.admin.dto.CreateAdminResponseDto;
-import com.ecommercebackoffice.admin.dto.SearchAdminRequestDto;
-import com.ecommercebackoffice.admin.dto.SearchAdminResponseDto;
+import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.auth.dto.LoginAdmin;
 import com.ecommercebackoffice.common.exception.UsedEmailException;
 import com.ecommercebackoffice.config.PasswordEncoder;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,7 +57,7 @@ public class AdminService {
     public Page<SearchAdminResponseDto> getAll(SearchAdminRequestDto request) {
 
         Pageable pageable = PageRequest.of(
-                request.getPage() - 1, // 0부터시작
+                request.getPage() - 1, // 페이지 0부터시작
                 request.getSize(),
                 Sort.by(
                         Sort.Direction.fromString(request.getDirection()),
@@ -84,5 +81,104 @@ public class AdminService {
                 admin.getCreatedAt(),
                 admin.getModifiedAt()
         ));
+    }
+
+    //────────────────────────────────────상세조회────────────────────────────────────
+    @Transactional(readOnly = true)
+    public GetOneAdminResponseDto getOne(Long adminId) {
+        Admin admin = adminRepository.findById(adminId)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 Admin 입니다."));
+
+        return new GetOneAdminResponseDto(admin.getName(),
+                admin.getEmail(),
+                admin.getPhoneNumber(),
+                admin.getRole(),
+                admin.getStatus(),
+                admin.getCreatedAt(),
+                admin.getModifiedAt());
+    }
+
+    //────────────────────────────────────관리자 정보 수정────────────────────────────────────
+    @Transactional
+    public UpdateAdminResponseDto update(Long adminId, UpdateAdminRequestDto request) {
+
+        Admin admin = findAdminId(adminId);
+        if (!admin.getEmail().equals(request.getEmail()) && adminRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+        }
+
+        admin.adminUpdate(request.getName(), request.getEmail(), request.getPhoneNumber());
+
+        return new UpdateAdminResponseDto(admin.getName(),
+                admin.getEmail(),
+                admin.getPhoneNumber(),
+                admin.getModifiedAt());
+    }
+    //────────────────────────────────────관리자 역활 수정────────────────────────────────────
+    @Transactional
+    public UpdateRoleResponseDto updateRole(Long adminId,UpdateRoleRequestDto request) {
+        Admin admin = findAdminId(adminId);
+        admin.roleUpdate(request.getRole());
+
+        return new UpdateRoleResponseDto(admin.getRole());
+    }
+    //────────────────────────────────────관리자 상태 수정────────────────────────────────────
+    @Transactional
+    public UpdateStatusResponseDto updateStatus(Long adminId,UpdateStatusRequestDto request) {
+        Admin admin = findAdminId(adminId);
+        admin.statusUpdate(request.getStatus());
+
+        return new UpdateStatusResponseDto(admin.getStatus());
+    }
+    //────────────────────────────────────관리자 삭제────────────────────────────────────
+    @Transactional
+    public void deleteAdmin(Long adminId) {
+
+        Admin admin = findAdminId(adminId);
+        admin.delete(); //소프트 삭제
+    }
+    //────────────────────────────────────내 정보 조회────────────────────────────────────
+    @Transactional(readOnly = true)
+    public GetMyInfoResponseDto getMyInfo(LoginAdmin loginAdmin) {
+        Admin admin = findAdminId(loginAdmin.adminId());
+
+        return new GetMyInfoResponseDto(admin.getName(),
+                admin.getEmail(),
+                admin.getPhoneNumber());
+    }
+    //────────────────────────────────────내 정보 수정────────────────────────────────────
+    @Transactional
+    public UpdateMyInfoResponseDto updateMyInfo(LoginAdmin loginAdmin, UpdateMyInfoRequestDto request)
+    {
+        Admin admin = findAdminId(loginAdmin.adminId());
+        admin.adminUpdate(request.getName(),request.getEmail(),request.getPhoneNumber());
+        return new UpdateMyInfoResponseDto(admin.getName(),
+                admin.getEmail(),
+                admin.getPhoneNumber(),
+                admin.getModifiedAt());
+    }
+    //────────────────────────────────────비밀번호 변경────────────────────────────────────
+    @Transactional
+    public void changePassword(LoginAdmin loginAdmin,ChangePasswordRequestDto request)
+    {
+        Admin admin = findAdminId(loginAdmin.adminId());
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), admin.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+        if (request.getCurrentPassword().equals(request.getNewPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호와 동일한 비밀번호입니다.");
+        }
+
+
+        String encoded = passwordEncoder.encode(request.getNewPassword());
+
+        admin.passwordChange(encoded);
+
+    }
+
+    private Admin findAdminId(Long adminId) {
+        return adminRepository.findById(adminId)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 Admin 입니다."));
     }
 }

@@ -1,10 +1,9 @@
 package com.ecommercebackoffice.admin.controller;
 
-import com.ecommercebackoffice.admin.dto.CreateAdminRequestDto;
-import com.ecommercebackoffice.admin.dto.CreateAdminResponseDto;
-import com.ecommercebackoffice.admin.dto.SearchAdminRequestDto;
-import com.ecommercebackoffice.admin.dto.SearchAdminResponseDto;
+import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.service.AdminService;
+import com.ecommercebackoffice.auth.dto.LoginAdmin;
+import com.ecommercebackoffice.common.Const;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +32,74 @@ public class AdminController {
     {
         Page<SearchAdminResponseDto> result = adminService.getAll(request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+    //────────────────────────────────────관리자상세조회────────────────────────────────────
+    @GetMapping("/{adminId}")
+    public ResponseEntity<GetOneAdminResponseDto> getOneAdmin(@PathVariable Long adminId)
+    {
+        GetOneAdminResponseDto result = adminService.getOne(adminId);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+    //────────────────────────────────────관리자정보수정────────────────────────────────────
+    @PatchMapping("/{adminId}")
+    public ResponseEntity<UpdateAdminResponseDto> updateAdmin(@PathVariable Long adminId,
+                                                              @RequestBody UpdateAdminRequestDto request)
+    {
+        UpdateAdminResponseDto result = adminService.update(adminId,request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+    //────────────────────────────────────관리자역활변경────────────────────────────────────
+    @PatchMapping("/{adminId}/role")
+    public ResponseEntity<UpdateRoleResponseDto> updateRole(
+            @PathVariable Long adminId,
+            @RequestBody @Valid UpdateRoleRequestDto request
+    ) {
+        UpdateRoleResponseDto result = adminService.updateRole(adminId,request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+    //────────────────────────────────────관리자 상태 변경────────────────────────────────────
+    @PatchMapping("/{adminId}/status")
+    public ResponseEntity<UpdateStatusResponseDto> updateStatus(
+            @PathVariable Long adminId,
+            @RequestBody @Valid UpdateStatusRequestDto request
+    ) {
+        UpdateStatusResponseDto result = adminService.updateStatus(adminId,request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+    //────────────────────────────────────관리자 삭제────────────────────────────────────
+    @DeleteMapping("/{adminId}")
+    public ResponseEntity<Void> deleteAdmin(@PathVariable Long adminId)
+    {
+        adminService.deleteAdmin(adminId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+    //────────────────────────────────────내프로필 조회────────────────────────────────────
+    @GetMapping("/me")
+    public ResponseEntity<GetMyInfoResponseDto> getInfo(
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
+    )
+    {
+        GetMyInfoResponseDto result = adminService.getMyInfo(loginAdmin);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+    //────────────────────────────────────내프로필 수정────────────────────────────────────
+    @PatchMapping("/me")
+    public ResponseEntity<UpdateMyInfoResponseDto> updateInfo(
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @Valid @RequestBody UpdateMyInfoRequestDto request
+    )
+    {
+        UpdateMyInfoResponseDto result = adminService.updateMyInfo(loginAdmin,request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+    //────────────────────────────────────내프로필 수정────────────────────────────────────
+    @PatchMapping
+    public ResponseEntity<String> changePassword(
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @Valid @RequestBody ChangePasswordRequestDto request)
+    {
+        adminService.changePassword(loginAdmin,request);
+        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
     }
 
 }
