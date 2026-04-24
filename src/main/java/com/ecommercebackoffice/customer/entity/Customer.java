@@ -1,4 +1,4 @@
-package com.customer.entity;
+package com.ecommercebackoffice.customer.entity;
 
 import com.ecommercebackoffice.common.entity.BaseEntity;
 import jakarta.persistence.*;

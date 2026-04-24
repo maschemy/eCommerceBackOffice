@@ -1,4 +1,4 @@
-package com.customer.entity;
+package com.ecommercebackoffice.customer.entity;
 
 public enum CustomerStatus {
     ACTIVE,     // 활성

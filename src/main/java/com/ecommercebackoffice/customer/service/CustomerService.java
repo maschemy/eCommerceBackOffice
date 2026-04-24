@@ -1,6 +1,6 @@
-package com.customer.service;
+package com.ecommercebackoffice.customer.service;
 
-import com.customer.repository.CustomerRepository;
+import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
