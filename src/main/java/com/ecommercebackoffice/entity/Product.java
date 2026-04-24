@@ -69,5 +69,10 @@ public class Product extends BaseEntity {
         }
     }
 
+    // 관리자가 수동으로 상품 상태 변경
+    public void changeStatus(ProductStatus status) {
+        this.status = status;
+    }
+
 
 }
