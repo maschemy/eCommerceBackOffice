@@ -73,6 +73,4 @@ public class Product extends BaseEntity {
     public void changeStatus(ProductStatus status) {
         this.status = status;
     }
-
-
 }
