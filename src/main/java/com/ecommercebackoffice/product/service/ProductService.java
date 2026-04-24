@@ -124,6 +124,26 @@ public class ProductService {
         product.changeStock(request.getAmount());
     }
 
+    // 관리자가 수동으로 상품 상태 변경
+    @Transactional
+    public void changeStatus(Long id, ChangeStatusRequestDto request) {
+
+        Product product = findProductById(id);
+
+        // 상태 변경
+        product.changeStatus(request.getStatus());
+    }
+
+    // 상품 삭제
+    @Transactional
+    public void deleteProduct(Long id) {
+
+        Product product = findProductById(id);
+
+        // DB에서 상품 삭제
+        productRepository.delete(product);
+    }
+
     private Product findProductById(Long id) {
     }
 }
