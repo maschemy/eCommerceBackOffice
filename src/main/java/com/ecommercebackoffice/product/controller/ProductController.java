@@ -2,6 +2,7 @@ package com.ecommercebackoffice.product.controller;
 
 import com.ecommercebackoffice.product.dto.CreateProductRequestDto;
 import com.ecommercebackoffice.product.dto.PageResponseDto;
+import com.ecommercebackoffice.product.dto.ProductDetailResponseDto;
 import com.ecommercebackoffice.product.dto.ProductListResponseDto;
 import com.ecommercebackoffice.product.entity.ProductCategory;
 import com.ecommercebackoffice.product.entity.ProductStatus;
@@ -59,6 +60,18 @@ public class ProductController {
 
         PageResponseDto<ProductListResponseDto> response = productService.getProducts(
                 keyword, category, status, page, size, sortBy, sortOrder);
+        return ResponseEntity.ok(response);
+    }
+
+    // 상품 상세 조회 API
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductDetailResponseDto> getProduct(
+            @PathVariable Long id,
+            HttpServletRequest httpRequest
+    ) {
+        getAdminIdFromSession(httpRequest);
+
+        ProductDetailResponseDto response = productService.getProduct(id);
         return ResponseEntity.ok(response);
     }
 }
