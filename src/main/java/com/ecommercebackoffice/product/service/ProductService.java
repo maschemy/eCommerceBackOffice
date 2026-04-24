@@ -1,6 +1,6 @@
-package com.ecommercebackoffice.service;
+package com.ecommercebackoffice.product.service;
 
-import com.ecommercebackoffice.repository.ProductRepository;
+import com.ecommercebackoffice.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

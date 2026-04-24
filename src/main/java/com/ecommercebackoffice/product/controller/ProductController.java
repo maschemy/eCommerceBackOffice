@@ -1,6 +1,6 @@
-package com.ecommercebackoffice.controller;
+package com.ecommercebackoffice.product.controller;
 
-import com.ecommercebackoffice.service.ProductService;
+import com.ecommercebackoffice.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

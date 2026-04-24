@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.entity;
+package com.ecommercebackoffice.product.entity;
 
 // 판매중, 품절, 단종 상태를 정의
 public enum ProductStatus {

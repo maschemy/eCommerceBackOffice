@@ -1,8 +1,7 @@
-package com.ecommercebackoffice.entity;
+package com.ecommercebackoffice.product.entity;
 
 import com.ecommercebackoffice.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

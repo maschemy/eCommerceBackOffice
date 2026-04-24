@@ -1,7 +1,7 @@
-package com.ecommercebackoffice.dto;
+package com.ecommercebackoffice.product.dto;
 
-import com.ecommercebackoffice.entity.ProductCategory;
-import com.ecommercebackoffice.entity.ProductStatus;
+import com.ecommercebackoffice.product.entity.ProductCategory;
+import com.ecommercebackoffice.product.entity.ProductStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

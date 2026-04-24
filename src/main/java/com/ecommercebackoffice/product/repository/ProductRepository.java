@@ -1,6 +1,6 @@
-package com.ecommercebackoffice.repository;
+package com.ecommercebackoffice.product.repository;
 
-import com.ecommercebackoffice.entity.Product;
+import com.ecommercebackoffice.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 // JPA를 활용한 상품 데이터 접근 계층을 구현
