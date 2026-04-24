@@ -1,11 +1,22 @@
 package com.ecommercebackoffice.product.service;
 
 import com.ecommercebackoffice.product.dto.CreateProductRequestDto;
+import com.ecommercebackoffice.product.dto.PageResponseDto;
+import com.ecommercebackoffice.product.dto.ProductDetailResponseDto;
+import com.ecommercebackoffice.product.dto.ProductListResponseDto;
 import com.ecommercebackoffice.product.entity.Product;
+import com.ecommercebackoffice.product.entity.ProductCategory;
+import com.ecommercebackoffice.product.entity.ProductStatus;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.data.jpa.repository.query.KeysetScrollSpecification.createSort;
 
 @Service
 @RequiredArgsConstructor
@@ -26,5 +37,69 @@ public class ProductService {
 
         Product savedProduct = productRepository.save(product);
         return savedProduct.getId();
+    }
+
+    // 검색, 필터, 페이징, 정렬 조건에 따라 상품 목록 조회
+    public PageResponseDto<ProductListResponseDto> getProducts(
+            String keyword,
+            ProductCategory category,
+            ProductStatus status,
+            int page,
+            int size,
+            String sortBy,
+            String sortOrder
+    ) {
+        int pageNumber = Math.max(page - 1, 0);
+        int pageSize = size > 0 ? size : 10;
+
+        // 정렬 조건 생성
+        Sort sort = createSort(sortBy, sortOrder);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
+
+        Page<Product> productPage = productRepository.findByConditions(
+                keyword, category, status, pageable
+        );
+
+        List<ProductListResponseDto> responseList = new ArrayList<>();
+        for (Product product : productPage.getContent()) {
+            responseList.add(new ProductListResponseDto(product));
+        }
+
+        // 변환된 DTO 리스트를 다시 Page 객체로 감싼다
+        Page<ProductListResponseDto> responsePage = new PageImpl<>(
+                responseList,
+                pageable,
+                productPage.getTotalElements()
+        );
+        return new PageResponseDto<>(responsePage);
+    }
+
+    // 정렬 메서드 분리
+    private Sort createSort(String sortBy, String sortOrder) {
+        String field;
+        if (sortBy.equals("price")) {
+            field = "price";
+        } else if (sortBy.equals("stock")) {
+            field = "stock";
+        } else {
+            field = "createdAt";
+        }
+
+        Sort.Direction direction;
+        if (sortOrder.equalsIgnoreCase("asc")) {
+            direction = Sort.Direction.ASC;
+        } else {
+            direction = Sort.Direction.DESC;
+        }
+        return Sort.by(direction, field);
+    }
+
+    // 상품 id로 상세 정보 조회
+    public ProductDetailResponseDto getProduct(Long id) {
+        Product product = findProductById(id);
+        return new ProductDetailResponseDto(product, "관리자명", "admin@example.com");
+    }
+
+    private Product findProductById(Long id) {
     }
 }
