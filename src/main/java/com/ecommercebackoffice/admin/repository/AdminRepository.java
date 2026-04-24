@@ -14,3 +14,5 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     Page<Admin> findByNameContainingOrEmailContaining(String name, String email, Pageable pageable);
     //부분검색을 위한 Containing ex) name = 홍길동 , name = 홍 만해도 검색가능
 }
+
+

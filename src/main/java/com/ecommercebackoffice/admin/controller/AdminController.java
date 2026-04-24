@@ -43,7 +43,7 @@ public class AdminController {
     //────────────────────────────────────관리자정보수정────────────────────────────────────
     @PatchMapping("/{adminId}")
     public ResponseEntity<UpdateAdminResponseDto> updateAdmin(@PathVariable Long adminId,
-                                                              @RequestBody UpdateAdminRequestDto request)
+                                                              @Valid @RequestBody UpdateAdminRequestDto request)
     {
         UpdateAdminResponseDto result = adminService.update(adminId,request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -73,6 +73,22 @@ public class AdminController {
         adminService.deleteAdmin(adminId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+    //────────────────────────────────────관리자 승인────────────────────────────────────
+    @PatchMapping("/{adminId}/approve")
+    public ResponseEntity<Void> approveAdmin(@PathVariable Long adminId) {
+        adminService.approveAdmin(adminId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    //────────────────────────────────────관리자 거부────────────────────────────────────
+    @PatchMapping("/{adminId}/reject")
+    public ResponseEntity<Void> rejectAdmin(@PathVariable Long adminId,
+                                            @Valid @RequestBody RejectAdminRequestDto request) {
+        adminService.rejectAdmin(adminId,request);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
     //────────────────────────────────────내프로필 조회────────────────────────────────────
     @GetMapping("/me")
     public ResponseEntity<GetMyInfoResponseDto> getInfo(
@@ -93,7 +109,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
     //────────────────────────────────────내프로필 수정────────────────────────────────────
-    @PatchMapping
+    @PatchMapping("/me/password")
     public ResponseEntity<String> changePassword(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @Valid @RequestBody ChangePasswordRequestDto request)

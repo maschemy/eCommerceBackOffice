@@ -114,22 +114,25 @@ public class AdminService {
                 admin.getPhoneNumber(),
                 admin.getModifiedAt());
     }
+
     //────────────────────────────────────관리자 역활 수정────────────────────────────────────
     @Transactional
-    public UpdateRoleResponseDto updateRole(Long adminId,UpdateRoleRequestDto request) {
+    public UpdateRoleResponseDto updateRole(Long adminId, UpdateRoleRequestDto request) {
         Admin admin = findAdminId(adminId);
         admin.roleUpdate(request.getRole());
 
         return new UpdateRoleResponseDto(admin.getRole());
     }
+
     //────────────────────────────────────관리자 상태 수정────────────────────────────────────
     @Transactional
-    public UpdateStatusResponseDto updateStatus(Long adminId,UpdateStatusRequestDto request) {
+    public UpdateStatusResponseDto updateStatus(Long adminId, UpdateStatusRequestDto request) {
         Admin admin = findAdminId(adminId);
         admin.statusUpdate(request.getStatus());
 
         return new UpdateStatusResponseDto(admin.getStatus());
     }
+
     //────────────────────────────────────관리자 삭제────────────────────────────────────
     @Transactional
     public void deleteAdmin(Long adminId) {
@@ -137,6 +140,7 @@ public class AdminService {
         Admin admin = findAdminId(adminId);
         admin.delete(); //소프트 삭제
     }
+
     //────────────────────────────────────내 정보 조회────────────────────────────────────
     @Transactional(readOnly = true)
     public GetMyInfoResponseDto getMyInfo(LoginAdmin loginAdmin) {
@@ -146,21 +150,21 @@ public class AdminService {
                 admin.getEmail(),
                 admin.getPhoneNumber());
     }
+
     //────────────────────────────────────내 정보 수정────────────────────────────────────
     @Transactional
-    public UpdateMyInfoResponseDto updateMyInfo(LoginAdmin loginAdmin, UpdateMyInfoRequestDto request)
-    {
+    public UpdateMyInfoResponseDto updateMyInfo(LoginAdmin loginAdmin, UpdateMyInfoRequestDto request) {
         Admin admin = findAdminId(loginAdmin.adminId());
-        admin.adminUpdate(request.getName(),request.getEmail(),request.getPhoneNumber());
+        admin.adminUpdate(request.getName(), request.getEmail(), request.getPhoneNumber());
         return new UpdateMyInfoResponseDto(admin.getName(),
                 admin.getEmail(),
                 admin.getPhoneNumber(),
                 admin.getModifiedAt());
     }
+
     //────────────────────────────────────비밀번호 변경────────────────────────────────────
     @Transactional
-    public void changePassword(LoginAdmin loginAdmin,ChangePasswordRequestDto request)
-    {
+    public void changePassword(LoginAdmin loginAdmin, ChangePasswordRequestDto request) {
         Admin admin = findAdminId(loginAdmin.adminId());
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), admin.getPassword())) {
@@ -175,6 +179,19 @@ public class AdminService {
 
         admin.passwordChange(encoded);
 
+    }
+    //────────────────────────────────────관리자 승인────────────────────────────────────
+    @Transactional
+    public void approveAdmin(Long adminId) {
+        Admin admin = findAdminId(adminId);
+        admin.approve();
+    }
+
+    //────────────────────────────────────관리자 거절────────────────────────────────────
+    @Transactional
+    public void rejectAdmin(Long adminId,RejectAdminRequestDto request) {
+        Admin admin = findAdminId(adminId);
+        admin.reject(request.getReject());
     }
 
     private Admin findAdminId(Long adminId) {

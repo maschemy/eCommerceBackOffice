@@ -22,6 +22,8 @@ public class Admin extends BaseEntity {
 
     private LocalDateTime approvedAt;
     private LocalDateTime deletedAt;
+    private LocalDateTime rejectedAt;
+    private String reject;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,5 +80,25 @@ public class Admin extends BaseEntity {
     public void passwordChange(String changedPassword)
     {
         this.password = changedPassword;
+    }
+
+    public void approve() {
+        if (this.status != AdminStatus.PENDING) {
+            throw new IllegalStateException("승인대기 상태의 관리자만 승인할 수 있습니다.");
+        }
+
+        this.status = AdminStatus.ACTIVE;
+        this.approvedAt = LocalDateTime.now();
+    }
+
+    public void reject(String reject)
+    {
+        if (this.status != AdminStatus.PENDING) {
+            throw new IllegalStateException("승인대기 상태의 관리자만 거부할 수 있습니다.");
+        }
+
+        this.status = AdminStatus.REJECTED;
+        this.rejectedAt = LocalDateTime.now();
+        this.reject = reject;
     }
 }
