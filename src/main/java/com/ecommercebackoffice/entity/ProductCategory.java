@@ -1,11 +1,15 @@
 package com.ecommercebackoffice.entity;
 
-@lombok.Getter
-@lombok.Setter@jakarta.persistence.Entity
-@jakarta.persistence.Table
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Table
 public class ProductCategory {
 
-
-
-
+    //TODO [리버스 엔지니어링] DB에서 열 생성
 }
