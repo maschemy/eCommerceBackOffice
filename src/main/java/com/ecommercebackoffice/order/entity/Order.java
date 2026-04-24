@@ -1,6 +1,9 @@
 package com.ecommercebackoffice.order.entity;
 
+import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.common.entity.BaseEntity;
+import com.ecommercebackoffice.customer.entity.Customer;
+import com.ecommercebackoffice.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,7 +42,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public Order(Admin admin, Customer customer, Product product,String orderNumber, int quantity, int totalPrice) {
+    public Order(Admin admin, Customer customer, Product product, String orderNumber, int quantity, int totalPrice) {
         this.admin = admin;
         this.customer = customer;
         this.product = product;
