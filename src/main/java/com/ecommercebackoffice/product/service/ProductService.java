@@ -23,5 +23,8 @@ public class ProductService {
                 request.getStatus(),
                 request.getAdminId()
         );
+
+        Product savedProduct = productRepository.save(product);
+        return savedProduct.getId();
     }
 }
