@@ -1,9 +1,6 @@
 package com.ecommercebackoffice.product.service;
 
-import com.ecommercebackoffice.product.dto.CreateProductRequestDto;
-import com.ecommercebackoffice.product.dto.PageResponseDto;
-import com.ecommercebackoffice.product.dto.ProductDetailResponseDto;
-import com.ecommercebackoffice.product.dto.ProductListResponseDto;
+import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.entity.ProductCategory;
 import com.ecommercebackoffice.product.entity.ProductStatus;
@@ -40,6 +37,7 @@ public class ProductService {
     }
 
     // 검색, 필터, 페이징, 정렬 조건에 따라 상품 목록 조회
+    @Transactional
     public PageResponseDto<ProductListResponseDto> getProducts(
             String keyword,
             ProductCategory category,
@@ -95,9 +93,35 @@ public class ProductService {
     }
 
     // 상품 id로 상세 정보 조회
+    @Transactional
     public ProductDetailResponseDto getProduct(Long id) {
         Product product = findProductById(id);
         return new ProductDetailResponseDto(product, "관리자명", "admin@example.com");
+    }
+
+    // 상품명, 카테고리, 가격 수정
+    @Transactional
+    public void updateProduct(Long id, UpdateProductRequestDto request) {
+
+        // ID로 상품 조회
+        Product product = findProductById(id);
+
+        // 엔티티 수정 메서드 호출
+        product.updateInfo(
+                request.getName(),
+                request.getCategory(),
+                request.getPrice()
+        );
+    }
+
+    // 재고 변경, 자동 상태 전환
+    @Transactional
+    public void changeStock(Long id, ChangeStockRequestDto request) {
+
+        Product product = findProductById(id);
+
+        // 재고 변경
+        product.changeStock(request.getAmount());
     }
 
     private Product findProductById(Long id) {
