@@ -3,9 +3,14 @@ package com.ecommercebackoffice.customer.service;
 import com.ecommercebackoffice.common.exception.NotFoundException;
 import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.entity.Customer;
+import com.ecommercebackoffice.customer.entity.CustomerStatus;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +22,21 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
 
     @Transactional(readOnly = true)
-    public List<SearchCustomerResponseDto> findAll() {
-        return customerRepository.findAllByDeletedAtIsNull().stream()
+    public List<SearchCustomerResponseDto> findAll(
+            String keyword, CustomerStatus status, int page,
+            int size, String sortBy, String direction
+    ) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortDirection, sortBy));
+
+        Page<Customer> customers = customerRepository.findAllWithFilter(keyword, status, pageable);
+
+        return customerRepository.findAllWithFilter(keyword,status,pageable).stream()
                 .map(customer -> new SearchCustomerResponseDto(
+                        customer.getId(),
                         customer.getName(),
                         customer.getEmail(),
                         customer.getPhoneNumber(),
@@ -35,6 +52,7 @@ public class CustomerService {
                 () -> new NotFoundException("고객 id가 존재하지 않습니다.")
         );
         return new SearchCustomerResponseDto(
+                customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhoneNumber(),

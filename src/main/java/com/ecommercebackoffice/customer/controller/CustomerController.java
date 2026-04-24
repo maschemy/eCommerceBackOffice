@@ -1,6 +1,7 @@
 package com.ecommercebackoffice.customer.controller;
 
 import com.ecommercebackoffice.customer.dto.*;
+import com.ecommercebackoffice.customer.entity.CustomerStatus;
 import com.ecommercebackoffice.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,16 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<List<SearchCustomerResponseDto>> getAllCustomer(){
-        return ResponseEntity.status(HttpStatus.OK).body(customerService.findAll());
+    public ResponseEntity<List<SearchCustomerResponseDto>> getAllCustomer(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) CustomerStatus status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction
+            ){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(customerService.findAll(keyword, status, page, size, sortBy, direction));
     }
 
     @GetMapping("/{customerId}")
