@@ -1,15 +1,19 @@
 package com.ecommercebackoffice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+// 전자기기, 패션/의류, 식품 카테고리를 정의
+public enum ProductCategory {
+    ELECTRONICS("전자기기"),
+    FASHION("패션/의류"),
+    FOOD("식품");
 
-@Getter
-@Setter
-@Entity
-@Table
-public class ProductCategory {
+    private final String description;
 
-    //TODO [리버스 엔지니어링] DB에서 열 생성
+    // 생성자
+    ProductCategory(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }
