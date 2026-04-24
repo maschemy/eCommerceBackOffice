@@ -2,15 +2,13 @@ package com.ecommercebackoffice.admin.controller;
 
 import com.ecommercebackoffice.admin.dto.CreateAdminRequestDto;
 import com.ecommercebackoffice.admin.dto.CreateAdminResponseDto;
+import com.ecommercebackoffice.admin.dto.SearchAdminRequestDto;
 import com.ecommercebackoffice.admin.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,4 +24,12 @@ public class AdminController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
+
+    @GetMapping
+    public ResponseEntity<SearchAdminRequestDto> getAllAdim(@Valid SearchAdminRequestDto request)
+    {
+        SearchAdminRequestDto result = adminService.getAll(request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
 }

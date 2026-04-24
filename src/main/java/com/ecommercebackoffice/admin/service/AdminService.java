@@ -2,6 +2,7 @@ package com.ecommercebackoffice.admin.service;
 
 import com.ecommercebackoffice.admin.dto.CreateAdminRequestDto;
 import com.ecommercebackoffice.admin.dto.CreateAdminResponseDto;
+import com.ecommercebackoffice.admin.dto.SearchAdminRequestDto;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.config.PasswordEncoder;
@@ -47,5 +48,9 @@ public class AdminService {
                 saved.getModifiedAt()
         );
 
+    }
+
+    @Transactional(readOnly = true)
+    public SearchAdminRequestDto getAll(@Valid SearchAdminRequestDto request) {
     }
 }
