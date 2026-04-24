@@ -1,7 +1,6 @@
 package com.ecommercebackoffice.admin.controller;
 
 import com.ecommercebackoffice.admin.dto.*;
-import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.service.AdminService;
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
 import com.ecommercebackoffice.common.Const;
@@ -32,7 +31,7 @@ public class AdminController {
     public ResponseEntity<Page<SearchAdminResponseDto>> getAllAdmin(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @Valid SearchAdminRequestDto request) {
-        allowSuperAdmin(loginAdmin);
+        loginAdmin.allowSuperAdmin();
         Page<SearchAdminResponseDto> result = adminService.getAll(request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
@@ -42,7 +41,7 @@ public class AdminController {
     public ResponseEntity<GetOneAdminResponseDto> getOneAdmin(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @PathVariable Long adminId) {
-        allowSuperAdmin(loginAdmin);
+        loginAdmin.allowSuperAdmin();
         GetOneAdminResponseDto result = adminService.getOne(adminId);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
@@ -53,7 +52,7 @@ public class AdminController {
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @PathVariable Long adminId,
             @Valid @RequestBody UpdateAdminRequestDto request) {
-        allowSuperAdmin(loginAdmin);
+        loginAdmin.allowSuperAdmin();
         UpdateAdminResponseDto result = adminService.update(adminId, request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
@@ -65,7 +64,7 @@ public class AdminController {
             @PathVariable Long adminId,
             @RequestBody @Valid UpdateRoleRequestDto request
     ) {
-        allowSuperAdmin(loginAdmin);
+        loginAdmin.allowSuperAdmin();
         UpdateRoleResponseDto result = adminService.updateRole(adminId, request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
@@ -77,7 +76,7 @@ public class AdminController {
             @PathVariable Long adminId,
             @RequestBody @Valid UpdateStatusRequestDto request
     ) {
-        allowSuperAdmin(loginAdmin);
+        loginAdmin.allowSuperAdmin();
         UpdateStatusResponseDto result = adminService.updateStatus(adminId, request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
@@ -87,7 +86,7 @@ public class AdminController {
     public ResponseEntity<Void> deleteAdmin(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @PathVariable Long adminId) {
-        allowSuperAdmin(loginAdmin);
+        loginAdmin.allowSuperAdmin();
         adminService.deleteAdmin(adminId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -97,7 +96,7 @@ public class AdminController {
     public ResponseEntity<Void> approveAdmin(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @PathVariable Long adminId) {
-        allowSuperAdmin(loginAdmin);
+        loginAdmin.allowSuperAdmin();
         adminService.approveAdmin(adminId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -108,7 +107,7 @@ public class AdminController {
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @PathVariable Long adminId,
             @Valid @RequestBody RejectAdminRequestDto request) {
-        allowSuperAdmin(loginAdmin);
+        loginAdmin.allowSuperAdmin();
         adminService.rejectAdmin(adminId, request);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -141,11 +140,4 @@ public class AdminController {
         adminService.changePassword(loginAdmin, request);
         return ResponseEntity.ok("비밀번호가 변경되었습니다.");
     }
-
-    private void allowSuperAdmin(LoginAdmin loginAdmin) {
-        if (loginAdmin.role() != AdminRole.SUPER_ADMIN) {
-            throw new IllegalStateException("슈퍼 관리자만 접근할 수 있습니다.");
-        }
-    }
-
 }

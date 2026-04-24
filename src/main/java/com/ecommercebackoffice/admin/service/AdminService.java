@@ -14,6 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -64,12 +66,16 @@ public class AdminService {
                         request.getSortBy()
                 )
         );
+        String keyword = request.getKeyword();
+        if (keyword == null) {
+            keyword = ""; //null 값체크
+        }
 
-        Page<Admin> admins = adminRepository.findByNameContainingOrEmailContaining(
-                request.getName(),
-                request.getEmail(),
-                pageable
-        );
+        Page<Admin> admins =
+                adminRepository.searchNameOrEmail(
+                        keyword,
+                        pageable
+                );
 
         return admins.map(admin -> new SearchAdminResponseDto(
                 admin.getId(),
@@ -180,6 +186,7 @@ public class AdminService {
         admin.passwordChange(encoded);
 
     }
+
     //────────────────────────────────────관리자 승인────────────────────────────────────
     @Transactional
     public void approveAdmin(Long adminId) {
@@ -189,7 +196,7 @@ public class AdminService {
 
     //────────────────────────────────────관리자 거절────────────────────────────────────
     @Transactional
-    public void rejectAdmin(Long adminId,RejectAdminRequestDto request) {
+    public void rejectAdmin(Long adminId, RejectAdminRequestDto request) {
         Admin admin = findAdminId(adminId);
         admin.reject(request.getReject());
     }

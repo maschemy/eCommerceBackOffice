@@ -12,9 +12,7 @@ import lombok.Getter;
 @Getter
 public class SearchAdminRequestDto {
     @Size(max = 50)
-    private String name;
-    @Email(message = "이메일 형식에 맞게 입력해주세요")
-    private String email;
+    private String keyword;
     @Min(1)
     private Integer page = 1; // 기본값 1 설정
     @Max(100)
