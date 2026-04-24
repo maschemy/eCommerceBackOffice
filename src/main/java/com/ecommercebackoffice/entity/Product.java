@@ -53,6 +53,21 @@ public class Product extends BaseEntity {
         this.price = price;
     }
 
+    // 재고 변경 시 단종 상태가 아니면 자동으로 상태를 전환한다
+    public void changeStock(int amount) {
+        this.stock = stock + amount;
+
+        if (this.status == ProductStatus.DISCOUNTED) {
+            return;
+        }
+
+        if (this.stock <= 0) {
+            this.stock = 0;
+            this.status = ProductStatus.OUT_OF_STOCK;
+        } else {
+            this.status = ProductStatus.ON_SALE;
+        }
+    }
 
 
 }
