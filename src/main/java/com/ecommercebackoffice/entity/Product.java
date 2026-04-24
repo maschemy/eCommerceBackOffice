@@ -21,6 +21,8 @@ public class Product extends BaseEntity {
     @Column(length = 100, nullable = false)
     private String name;
 
+    // Enum을 사용하고 이름 문자열을 사용하므로 String을 사용해준다.
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductCategory category;
 
@@ -30,6 +32,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Integer stock;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProductStatus status;
 
