@@ -9,7 +9,8 @@ import lombok.Getter;
 
 @Getter
 public class SearchAdminRequestDto {
-    private String keyword; // 이름,이메일
+    private String name;
+    private String email;
     @Min(1)
     private Integer page = 1; // 기본값 1 설정
     @Max(100)

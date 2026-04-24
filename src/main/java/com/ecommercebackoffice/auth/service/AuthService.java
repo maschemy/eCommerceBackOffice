@@ -4,6 +4,7 @@ import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.auth.dto.LoginRequest;
 import com.ecommercebackoffice.auth.dto.LoginResponse;
+import com.ecommercebackoffice.common.exception.LoginFailException;
 import com.ecommercebackoffice.config.PasswordEncoder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +18,17 @@ public class AuthService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+    //────────────────────────────────────로그인────────────────────────────────────
     @Transactional(readOnly = true)
     public LoginResponse login(@Valid LoginRequest request) {
 
         Admin admin = adminRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalStateException("이메일 또는 비밀번호가 일치하지 않습니다."));
+                .orElseThrow(() -> new LoginFailException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
         //암호화된 DB속 비밀번호와 입력값 비교
         if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) { //equals 아닌 matches 로 비교
-            throw new IllegalStateException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new LoginFailException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
         admin.getStatus().validateLogin();

@@ -2,6 +2,7 @@ package com.ecommercebackoffice.admin.entity;
 
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
+import com.ecommercebackoffice.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name="admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Admin extends BaseEntity{
+public class Admin extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

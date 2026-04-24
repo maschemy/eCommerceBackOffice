@@ -4,7 +4,7 @@ import com.ecommercebackoffice.auth.dto.LoginAdmin;
 import com.ecommercebackoffice.auth.dto.LoginRequest;
 import com.ecommercebackoffice.auth.dto.LoginResponse;
 import com.ecommercebackoffice.auth.service.AuthService;
-import com.ecommercebackoffice.config.Const;
+import com.ecommercebackoffice.common.Const;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    //────────────────────────────────────로그인────────────────────────────────────
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session)
     {
@@ -29,7 +30,7 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-
+    //────────────────────────────────────로그아웃────────────────────────────────────
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@SessionAttribute(name = Const.LOGIN_ADMIN, required = false)LoginAdmin loginAdmin, HttpSession session)
     {
