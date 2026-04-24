@@ -144,6 +144,9 @@ public class ProductService {
         productRepository.delete(product);
     }
 
+    // 상품 조회 로직
     private Product findProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("상품을 찾을 수 없습니다. ID: " + id));
     }
 }
