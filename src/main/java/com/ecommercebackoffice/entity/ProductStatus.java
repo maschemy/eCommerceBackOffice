@@ -1,15 +1,18 @@
 package com.ecommercebackoffice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+// 판매중, 품절, 단종 상태를 정의
+public enum ProductStatus {
+    ON_SALE("판매중"),
+    OUT_OF_STOCK("품절"),
+    DISCOUNTED("단종");
 
-@Getter
-@Setter
-@Entity
-@Table
-public class ProductStatus {
+    private final String description;
 
-    //TODO [리버스 엔지니어링] DB에서 열 생성
+    ProductStatus(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }
