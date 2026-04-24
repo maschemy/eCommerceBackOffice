@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.data.jpa.repository.query.KeysetScrollSpecification.createSort;
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -22,14 +20,14 @@ public class ProductService {
 
     // 입력 받은 정보로 새로운 상품 등록
     @Transactional
-    public Long createProduct(CreateProductRequestDto request) {
+    public Long createProduct(CreateProductRequestDto request, Long adminId) {
         Product product = new Product(
                 request.getName(),
                 request.getCategory(),
                 request.getPrice(),
                 request.getStock(),
                 request.getStatus(),
-                request.getAdminId()
+                adminId
         );
 
         Product savedProduct = productRepository.save(product);
