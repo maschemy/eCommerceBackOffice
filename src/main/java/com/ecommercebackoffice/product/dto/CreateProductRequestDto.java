@@ -28,7 +28,4 @@ public class CreateProductRequestDto {
 
     @NotBlank(message = "상태는 필수입니다.")
     private ProductStatus status;
-
-    @NotBlank(message = "관리자 ID는 필수입니다.")
-    private Long adminId;
 }
