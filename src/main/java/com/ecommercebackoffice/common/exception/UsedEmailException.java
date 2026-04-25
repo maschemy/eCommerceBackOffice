@@ -5,6 +5,6 @@ import org.springframework.http.HttpStatus;
 public class UsedEmailException extends ServiceException{
 
     public UsedEmailException(String message) {
-        super(HttpStatus.UNAUTHORIZED, message);
+        super(HttpStatus.CONFLICT, message);
     }
 }

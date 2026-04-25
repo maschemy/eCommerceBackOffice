@@ -4,6 +4,8 @@ import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
+import com.ecommercebackoffice.common.exception.AdminNotFoundException;
+import com.ecommercebackoffice.common.exception.PasswordIncorrectException;
 import com.ecommercebackoffice.common.exception.UsedEmailException;
 import com.ecommercebackoffice.config.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class AdminService {
     @Transactional
     public CreateAdminResponseDto save(CreateAdminRequestDto request) {
         if (adminRepository.existsByEmail(request.getEmail())) {
-            throw new UsedEmailException("이미 사용중인 이메일입니다."); //이메일 중복검사
+            throw new UsedEmailException("이미 존재하는 이메일입니다."); //이메일 중복검사
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword()); //비밀번호암호화
 
@@ -92,8 +92,7 @@ public class AdminService {
     //────────────────────────────────────상세조회────────────────────────────────────
     @Transactional(readOnly = true)
     public GetOneAdminResponseDto getOne(Long adminId) {
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 Admin 입니다."));
+        Admin admin = findAdminId(adminId);
 
         return new GetOneAdminResponseDto(admin.getName(),
                 admin.getEmail(),
@@ -110,7 +109,7 @@ public class AdminService {
 
         Admin admin = findAdminId(adminId);
         if (!admin.getEmail().equals(request.getEmail()) && adminRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalStateException("이미 존재하는 이메일입니다.");
+            throw new UsedEmailException("이미 존재하는 이메일입니다."); //회원가입때 중복검사와다르다
         }
 
         admin.adminUpdate(request.getName(), request.getEmail(), request.getPhoneNumber());
@@ -174,10 +173,10 @@ public class AdminService {
         Admin admin = findAdminId(loginAdmin.adminId());
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), admin.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+            throw new PasswordIncorrectException("비밀번호가 올바르지 않습니다.");
         }
         if (request.getCurrentPassword().equals(request.getNewPassword())) {
-            throw new IllegalArgumentException("기존 비밀번호와 동일한 비밀번호입니다.");
+            throw new PasswordIncorrectException("기존 비밀번호와 동일한 비밀번호입니다.");
         }
 
 
@@ -201,8 +200,9 @@ public class AdminService {
         admin.reject(request.getReject());
     }
 
+    //────────────────────────────────────메소드────────────────────────────────────
     private Admin findAdminId(Long adminId) {
         return adminRepository.findById(adminId)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 Admin 입니다."));
+                .orElseThrow(() -> new AdminNotFoundException("존재하지 않는 Admin 입니다."));
     }
 }
