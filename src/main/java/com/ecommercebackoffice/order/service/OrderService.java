@@ -6,19 +6,23 @@ import com.ecommercebackoffice.auth.dto.LoginAdmin;
 import com.ecommercebackoffice.common.exception.QuantityGreaterThanStockException;
 import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
-import com.ecommercebackoffice.order.dto.CreateOrderRequestDto;
-import com.ecommercebackoffice.order.dto.CreateOrderResponseDto;
+import com.ecommercebackoffice.order.dto.*;
 import com.ecommercebackoffice.order.entity.Order;
+import com.ecommercebackoffice.order.entity.OrderStatus;
 import com.ecommercebackoffice.order.repository.OrderRepository;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.entity.ProductStatus;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,7 +37,7 @@ public class OrderService {
     // CS 주문 생성
     @Transactional
     public CreateOrderResponseDto save(CreateOrderRequestDto request, LoginAdmin loginAdmin) {
-        Admin admin = adminRepository.findById(loginAdmin.adminId()).orElseThrow(
+        Admin admin = adminRepository.findById(1L).orElseThrow(
                 () -> new IllegalStateException("없는 관리자"));
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
                 () -> new IllegalStateException("없는 고객"));
@@ -80,14 +84,64 @@ public class OrderService {
         return new CreateOrderResponseDto(
                 savedOrder.getId(),
                 savedOrder.getOrderNumber(),
-                savedOrder.getCustomer().getName(),
-                savedOrder.getProduct().getName(),
+                customer.getName(),
+                product.getName(),
                 savedOrder.getQuantity(),
                 savedOrder.getTotalPrice(),
                 savedOrder.getStatus(),
                 savedOrder.getCreatedAt(),
-                savedOrder.getAdmin().getName()
+                admin.getName()
         );
     }
 
+    // 주문 리스트 조회
+    @Transactional(readOnly = true)
+    public PaginationOrderDTO getAll(int page, int size,
+                                     String orderNumberOrCustomerName,
+                                     String sortBy, String direction,
+                                     OrderStatus status) {
+
+        Page<Order> orders = orderRepository.findAllWithFilters(
+                orderNumberOrCustomerName,
+                status,
+                PageRequest.of(page-1, size, Sort.by(Sort.Direction.fromString(direction), sortBy)));
+
+        List<ReadAllOrdersResponseDto> readAllOrdersResponseDtos = orders
+                    .stream()
+                    .map(order -> new ReadAllOrdersResponseDto(
+                        order.getId(),
+                        order.getOrderNumber(),
+                        order.getCustomer().getName(),
+                        order.getProduct().getName(),
+                        order.getQuantity(),
+                        order.getTotalPrice(),
+                        order.getStatus(),
+                        order.getCreatedAt(),
+                        order.getAdmin().getName()))
+                    .toList();
+
+        return new PaginationOrderDTO(readAllOrdersResponseDtos, page, size, orders.getTotalElements(), orders.getTotalPages());
+    }
+
+    // 주문 상세 조회
+    @Transactional(readOnly = true)
+    public ReadOneOrderResponseDto getOne(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> new IllegalStateException("없는 주문")
+        );
+
+        return new ReadOneOrderResponseDto(
+                order.getOrderNumber(),
+                order.getCustomer().getName(),
+                order.getCustomer().getEmail(),
+                order.getProduct().getName(),
+                order.getQuantity(),
+                order.getTotalPrice(),
+                order.getStatus(),
+                order.getCreatedAt(),
+                order.getAdmin().getName(),
+                order.getAdmin().getEmail(),
+                order.getAdmin().getRole()
+        );
+    }
 }

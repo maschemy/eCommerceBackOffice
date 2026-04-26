@@ -14,7 +14,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 
 @SQLDelete(sql = "UPDATE orders SET deletedAt = NOW() WHERE id = ?")
-@SQLRestriction("deletedAt IS NULL")
+@SQLRestriction("deleted_at IS NULL")
 @Getter
 @Entity
 @Table(name = "orders")
