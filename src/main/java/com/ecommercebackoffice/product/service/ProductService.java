@@ -94,7 +94,7 @@ public class ProductService {
     @Transactional
     public ProductDetailResponseDto getProduct(Long id) {
         Product product = findProductById(id);
-        return new ProductDetailResponseDto(product, "관리자명", "admin@example.com");
+        return new ProductDetailResponseDto(product, "홍길동", "admin@test.com");
     }
 
     // 상품명, 카테고리, 가격 수정
