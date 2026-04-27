@@ -1,5 +1,7 @@
 package com.ecommercebackoffice.product.controller;
 
+import com.ecommercebackoffice.auth.dto.LoginAdmin;
+import com.ecommercebackoffice.common.Const;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.ProductCategory;
 import com.ecommercebackoffice.product.entity.ProductStatus;
@@ -22,9 +24,10 @@ public class ProductController {
     // http 세션
     private Long getAdminIdFromSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("LOGIN_Admin") == null)
+        if (session == null || session.getAttribute(Const.LOGIN_ADMIN) == null)
             throw new IllegalArgumentException("로그인이 필요합니다.");
-        return (Long) session.getAttribute("LOGIN_Admin");
+        LoginAdmin loginAdmin = (LoginAdmin) session.getAttribute(Const.LOGIN_ADMIN);
+        return loginAdmin.adminId();
     }
 
     // 상품 등록 API
