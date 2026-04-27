@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 // BaseEntity를 상속받아 사용
-
 @Entity
 @Table(name = "products")
 @Getter
