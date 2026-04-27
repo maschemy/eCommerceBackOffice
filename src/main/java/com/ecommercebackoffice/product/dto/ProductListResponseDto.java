@@ -15,7 +15,7 @@ public class ProductListResponseDto {
     private final Long id;
     private final String name;
     private final ProductCategory category;
-    private final Integer price;
+    private final Long price;
     private final Integer stock;
     private final ProductStatus status;
     private final LocalDateTime createdAt;
