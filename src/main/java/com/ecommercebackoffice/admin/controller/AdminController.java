@@ -4,6 +4,7 @@ import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.service.AdminService;
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
 import com.ecommercebackoffice.common.Const;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final AdminService adminService;
+    private final HttpSession httpSession;
 
     //────────────────────────────────────관리자생성────────────────────────────────────
     @PostMapping
@@ -93,23 +95,23 @@ public class AdminController {
 
     //────────────────────────────────────관리자 승인────────────────────────────────────
     @PatchMapping("/{adminId}/approve")
-    public ResponseEntity<Void> approveAdmin(
+    public ResponseEntity<String> approveAdmin(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @PathVariable Long adminId) {
         loginAdmin.allowSuperAdmin();
         adminService.approveAdmin(adminId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body("관리자의 의해 승인되었습니다");
     }
 
     //────────────────────────────────────관리자 거부────────────────────────────────────
     @PatchMapping("/{adminId}/reject")
-    public ResponseEntity<Void> rejectAdmin(
+    public ResponseEntity<String> rejectAdmin(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @PathVariable Long adminId,
             @Valid @RequestBody RejectAdminRequestDto request) {
         loginAdmin.allowSuperAdmin();
         adminService.rejectAdmin(adminId, request);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body("관리자의 의해 거부되었습니다");
     }
 
 
@@ -132,12 +134,14 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    //────────────────────────────────────내프로필 수정────────────────────────────────────
+    //────────────────────────────────────비밀번호 수정────────────────────────────────────
     @PatchMapping("/me/password")
     public ResponseEntity<String> changePassword(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
-            @Valid @RequestBody ChangePasswordRequestDto request) {
+            @Valid @RequestBody ChangePasswordRequestDto request,
+            HttpSession session) {
         adminService.changePassword(loginAdmin, request);
-        return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경되었습니다.");
+        session.invalidate();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("비밀번호가 변경되었습니다. 다시 로그인해 주세요");
     }
 }
