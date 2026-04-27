@@ -176,11 +176,6 @@ public class OrderService {
             throw new IllegalStateException("배송완료된 주문은 상태를 변경할 수 없습니다");
         }
 
-        // Enum에 없는 status 입력 시 예외 발생
-        if (OrderStatus.valueOf(request.getStatus().name()) == null) {
-            throw new IllegalStateException("올바른 주문 상태를 입력해야 합니다");
-        }
-
         order.update(request.getStatus());
 
         return new UpdateOrderResponseDto(
