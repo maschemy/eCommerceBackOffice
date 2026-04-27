@@ -7,12 +7,12 @@ import java.util.List;
 @Getter
 public class PaginationOrderDTO {
     private final List<ReadAllOrdersResponseDto> readAllOrdersResponseDtos;
-    private final int page;
-    private final int size;
+    private final Integer page;
+    private final Integer size;
     private final long totalOrder;
-    private final int totalPage;
+    private final Integer totalPage;
 
-    public PaginationOrderDTO(List<ReadAllOrdersResponseDto> readAllOrdersResponseDtos, int page, int size, long totalOrder, int totalPage) {
+    public PaginationOrderDTO(List<ReadAllOrdersResponseDto> readAllOrdersResponseDtos, Integer page, Integer size, long totalOrder, Integer totalPage) {
         this.readAllOrdersResponseDtos = readAllOrdersResponseDtos;
         this.page = page;
         this.size = size;

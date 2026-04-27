@@ -21,7 +21,7 @@ public class OrderController {
     // CS 주문 생성
     @PostMapping
     public ResponseEntity<CreateOrderResponseDto> createOrder(
-            @RequestBody CreateOrderRequestDto request,
+            @Valid @RequestBody CreateOrderRequestDto request,
             @SessionAttribute(name = Const.LOGIN_ADMIN, required = false)LoginAdmin loginAdmin
             )
     {
@@ -62,7 +62,7 @@ public class OrderController {
     @PatchMapping("/{id}")
     public ResponseEntity<UpdateOrderResponseDto> updateOrder(
             @PathVariable Long id,
-            @RequestBody UpdateOrderRequestDto request
+            @Valid @RequestBody UpdateOrderRequestDto request
     ) {
         UpdateOrderResponseDto result = orderService.update(id, request);
 

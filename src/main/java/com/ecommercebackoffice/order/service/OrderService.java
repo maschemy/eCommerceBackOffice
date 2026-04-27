@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,17 +38,12 @@ public class OrderService {
     // CS 주문 생성
     @Transactional
     public CreateOrderResponseDto save(CreateOrderRequestDto request, LoginAdmin loginAdmin) {
-        Admin admin = adminRepository.findById(1L).orElseThrow(
+        Admin admin = adminRepository.findById(loginAdmin.adminId()).orElseThrow(
                 () -> new IllegalStateException("없는 관리자"));
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
                 () -> new IllegalStateException("없는 고객"));
         Product product = productRepository.findById(request.getProductId()).orElseThrow(
                 () -> new IllegalStateException("없는 상품"));
-
-        // 수량이 1 미만일 경우 예외 발생
-        if (request.getQuantity() < 1) {
-            throw new IllegalStateException("수량은 1이상이어야 합니다.");
-        }
 
         // 상품이 판매중이 아닐 경우 예외 발생
         if (product.getStatus() != ProductStatus.ON_SALE) {
@@ -68,8 +64,9 @@ public class OrderService {
                 + UUID.randomUUID().toString().substring(0, 4);
 
         // 총 주문 금액 계산
-        int totalPrice = product.getPrice() * request.getQuantity();
+        Integer totalPrice = product.getPrice() * request.getQuantity();
 
+        // 요청에 따른 주문 생성
         Order order = new Order(
                 admin,
                 customer,
@@ -79,6 +76,7 @@ public class OrderService {
                 totalPrice
         );
 
+        // db 저장 후 요청 dto로 변환 후 반환
         Order savedOrder = orderRepository.save(order);
 
         return new CreateOrderResponseDto(
@@ -101,11 +99,33 @@ public class OrderService {
                                      String sortBy, String direction,
                                      OrderStatus status) {
 
+        // 정렬 기준 리스트
+        List<String> sortableColumns = new ArrayList<>(List.of("orderNumber", "customer",
+                "product", "quantity", "totalPrice", "createdAt", "status")) ;
+
+        // 정렬 기준 검증
+        if (!sortableColumns.contains(sortBy)) {
+            throw new IllegalStateException("잘못된 정렬 기준");
+        }
+
+        // 정렬 방식 검증
+        if (!direction.equals("ASC") && !direction.equals("DESC")) {
+            throw new IllegalStateException("ASC 또는 DESC로 입력(대소문자 구분): " + direction);
+        }
+
+        // 페이지 정보 검증
+        if (page < 0 || size < 0) {
+            throw new IllegalStateException("page와 size는 음수가 될 수 없습니다 page: "
+                    + page + "size: " + size);
+        }
+
+        // 페이지네이션
         Page<Order> orders = orderRepository.findAllWithFilters(
                 orderNumberOrCustomerName,
                 status,
                 PageRequest.of(page-1, size, Sort.by(Sort.Direction.fromString(direction), sortBy)));
 
+        // 페이지 내용 dto로 변환
         List<ReadAllOrdersResponseDto> readAllOrdersResponseDtos = orders
                     .stream()
                     .map(order -> new ReadAllOrdersResponseDto(
@@ -154,6 +174,11 @@ public class OrderService {
 
         if (order.getStatus() == OrderStatus.COMPLETE) {
             throw new IllegalStateException("배송완료된 주문은 상태를 변경할 수 없습니다");
+        }
+
+        // Enum에 없는 status 입력 시 예외 발생
+        if (OrderStatus.valueOf(request.getStatus().name()) == null) {
+            throw new IllegalStateException("올바른 주문 상태를 입력해야 합니다");
         }
 
         order.update(request.getStatus());
