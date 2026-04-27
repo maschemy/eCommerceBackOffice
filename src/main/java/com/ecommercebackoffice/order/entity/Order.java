@@ -19,7 +19,7 @@ public class Order extends BaseEntity {
     private Long id;
     private String orderNumber;
     private Integer quantity;
-    private Integer totalPrice;
+    private Long totalPrice;
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.READY;
     private String cancelReason;
@@ -36,7 +36,7 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public Order(Admin admin, Customer customer, Product product, String orderNumber, Integer quantity, Integer totalPrice) {
+    public Order(Admin admin, Customer customer, Product product, String orderNumber, Integer quantity, Long totalPrice) {
         this.admin = admin;
         this.customer = customer;
         this.product = product;
@@ -45,7 +45,11 @@ public class Order extends BaseEntity {
         this.totalPrice = totalPrice;
     }
 
-    // 주문 상태 수정
+    /**
+     * 주문 상태 수정
+     * 준비중에서 배송완료로 변경 불가, 취소된 주문 상태 수정 불가
+     * @param status READY, DELIVERY, COMPLETE
+     */
     public void update(OrderStatus status) {
         if (this.status == OrderStatus.READY && status == OrderStatus.COMPLETE) {
             throw new IllegalStateException("준비중 -> 배송중 -> 배송완료: 절차를 거쳐야 합니다");
@@ -56,7 +60,11 @@ public class Order extends BaseEntity {
         this.status = status;
     }
 
-    // 주문 취소
+    /**
+     * 주문취소
+     * 주문 상태가 READY 일 때만 CANCEL로 변경
+     * @param cancelReason 취소 사유 null -> 변경
+     */
     public void cancel(String cancelReason) {
         if (this.status != OrderStatus.READY) {
             throw new IllegalStateException("준비중일때만 취소 가능합니다");
