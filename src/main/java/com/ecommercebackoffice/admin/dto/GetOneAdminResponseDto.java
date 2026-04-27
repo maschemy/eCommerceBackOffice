@@ -7,9 +7,8 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class CreateAdminResponseDto {
+public class GetOneAdminResponseDto {
 
-    private final Long id;
     private final String name;
     private final String email;
     private final String phoneNumber;
@@ -18,8 +17,7 @@ public class CreateAdminResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    public CreateAdminResponseDto(Long id, String name, String email, String phoneNumber, AdminRole role, AdminStatus status, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        this.id = id;
+    public GetOneAdminResponseDto(String name, String email, String phoneNumber, AdminRole role, AdminStatus status, LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;

@@ -2,9 +2,9 @@ package com.ecommercebackoffice.common.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class UsedEmailException extends ServiceException{
+public class QuantityGreaterThanStockException extends ServiceException{
 
-    public UsedEmailException(String message) {
+    public QuantityGreaterThanStockException(String message) {
         super(HttpStatus.CONFLICT, message);
     }
 }
