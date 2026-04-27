@@ -21,12 +21,24 @@ import java.util.List;
 public class CustomerService {
     private final CustomerRepository customerRepository;
 
+    /**
+     * 고객 목록 조회
+     * 탈퇴 고객 제외, 키워드(이름,이메일) 검색, 상태 필터, 페이징,정렬
+     * @param keyword
+     * @param status
+     * @param page
+     * @param size
+     * @param sortBy
+     * @param direction
+     * @return
+     */
     @Transactional(readOnly = true)
-    public List<SearchCustomerResponseDto> findAll(
+    public Page<SearchCustomerResponseDto> findAll(
             String keyword, CustomerStatus status, int page,
             int size, String sortBy, String direction
     ) {
-        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc")
+        Sort.Direction sortDirection =
+                direction.equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC
                 : Sort.Direction.DESC;
 
@@ -34,18 +46,21 @@ public class CustomerService {
 
         Page<Customer> customers = customerRepository.findAllWithFilter(keyword, status, pageable);
 
-        return customerRepository.findAllWithFilter(keyword,status,pageable).stream()
-                .map(customer -> new SearchCustomerResponseDto(
+        return customers.map(customer -> new SearchCustomerResponseDto(
                         customer.getId(),
                         customer.getName(),
                         customer.getEmail(),
                         customer.getPhoneNumber(),
                         customer.getStatus(),
                         customer.getCreatedAt()
-                ))
-                .toList();
+                ));
     }
 
+    /**
+     * 고객 단건 조회
+     * @param customerId
+     * @return
+     */
     @Transactional(readOnly = true)
     public SearchCustomerResponseDto findOne(Long customerId) {
         Customer customer = customerRepository.findByIdAndDeletedAtIsNull(customerId).orElseThrow(
@@ -61,6 +76,12 @@ public class CustomerService {
         );
     }
 
+    /**
+     * 고객 정보 수정
+     * @param request
+     * @param customerId
+     * @return
+     */
     @Transactional
     public UpdateCustomerResponseDto updateInfo(@Valid UpdateCustomerRequestDto request, Long customerId) {
         Customer customer = customerRepository.findByIdAndDeletedAtIsNull(customerId).orElseThrow(
@@ -77,6 +98,12 @@ public class CustomerService {
         );
     }
 
+    /**
+     * 고객 상태 변경
+     * @param request
+     * @param customerId
+     * @return
+     */
     @Transactional
     public UpdateCustomerStatusResponseDto updateStatus(@Valid UpdateCustomerStatusRequestDto request,Long customerId) {
         Customer customer = customerRepository.findByIdAndDeletedAtIsNull(customerId).orElseThrow(
@@ -92,6 +119,10 @@ public class CustomerService {
         );
     }
 
+    /**
+     * 고객 삭제(soft delete)
+     * @param customerId
+     */
     @Transactional
     public void delete(Long customerId) {
         Customer customer = customerRepository.findByIdAndDeletedAtIsNull(customerId)

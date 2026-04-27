@@ -12,15 +12,23 @@ import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer,Long> {
     boolean existsByEmail(String email);
-    Optional<Customer> findByIdAndDeletedAtIsNull(long id);
+    Optional<Customer> findByIdAndDeletedAtIsNull(Long id);
 
+
+    /**
+     * 고객 리스트 조회를 위한 쿼리
+     * @param keyword
+     * @param status
+     * @param pageable
+     * @return
+     */
     @Query("SELECT c FROM Customer c " +
             "WHERE c.deletedAt IS NULL " +
             "AND (:keyword IS NULL OR c.name LIKE %:keyword% OR c.email LIKE %:keyword%) " +
             "AND (:status IS NULL OR c.status = :status)")
     Page<Customer> findAllWithFilter(
             @Param("keyword") String keyword,
-            @Param("status") CustomerStatus statusm,
+            @Param("status") CustomerStatus status,
             Pageable pageable
     );
 }
