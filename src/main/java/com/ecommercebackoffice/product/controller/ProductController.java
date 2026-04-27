@@ -110,4 +110,16 @@ public class ProductController {
         productService.changeStatus(id, request);
         return ResponseEntity.ok().build();
     }
+
+    // 상품 삭제 API
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable Long id,
+            HttpServletRequest httpRequest
+    ) {
+        getAdminIdFromSession(httpRequest);
+
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
+    }
 }
