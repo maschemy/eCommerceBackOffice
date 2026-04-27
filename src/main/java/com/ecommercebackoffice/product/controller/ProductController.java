@@ -22,9 +22,9 @@ public class ProductController {
     // http 세션
     private Long getAdminIdFromSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("LOGIN_Admin_ID") == null)
+        if (session == null || session.getAttribute("LOGIN_Admin") == null)
             throw new IllegalArgumentException("로그인이 필요합니다.");
-        return (Long) session.getAttribute("LOGIN_Admin_ID");
+        return (Long) session.getAttribute("LOGIN_Admin");
     }
 
     // 상품 등록 API
