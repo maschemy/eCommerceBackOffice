@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/products")
@@ -31,13 +30,14 @@ public class ProductController {
     // 상품 등록 API
     @PostMapping
     public ResponseEntity<Void> createProduct(
-            @Valid @RequestBody CreateProductRequestDto request, HttpServletRequest httpRequest
+            @Valid @RequestBody CreateProductRequestDto request,
+            HttpServletRequest httpRequest
     ) {
         // 세션에서 관리자 id 추출
         Long adminId = getAdminIdFromSession(httpRequest);
 
         // 추출한 관리자 id를 service로 전달
-        Long productId = productService.createProduct(request, adminId);
+        productService.createProduct(request, adminId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
