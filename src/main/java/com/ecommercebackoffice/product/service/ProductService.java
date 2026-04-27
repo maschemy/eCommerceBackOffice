@@ -35,7 +35,7 @@ public class ProductService {
     }
 
     // 검색, 필터, 페이징, 정렬 조건에 따라 상품 목록 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public PageResponseDto<ProductListResponseDto> getProducts(
             String keyword,
             ProductCategory category,

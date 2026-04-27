@@ -6,8 +6,6 @@ import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.ProductCategory;
 import com.ecommercebackoffice.product.entity.ProductStatus;
 import com.ecommercebackoffice.product.service.ProductService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,26 +19,13 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     private final ProductService productService;
 
-    // http 세션
-    private Long getAdminIdFromSession(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute(Const.LOGIN_ADMIN) == null)
-            throw new IllegalArgumentException("로그인이 필요합니다.");
-        LoginAdmin loginAdmin = (LoginAdmin) session.getAttribute(Const.LOGIN_ADMIN);
-        return loginAdmin.adminId();
-    }
-
     // 상품 등록 API
     @PostMapping
     public ResponseEntity<Void> createProduct(
             @Valid @RequestBody CreateProductRequestDto request,
-            HttpServletRequest httpRequest
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        // 세션에서 관리자 id 추출
-        Long adminId = getAdminIdFromSession(httpRequest);
-
-        // 추출한 관리자 id를 service로 전달
-        productService.createProduct(request, adminId);
+        productService.createProduct(request, loginAdmin.adminId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -54,10 +39,8 @@ public class ProductController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortOrder,
-            HttpServletRequest httpRequest
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        getAdminIdFromSession(httpRequest);
-
         PageResponseDto<ProductListResponseDto> response = productService.getProducts(
                 keyword, category, status, page, size, sortBy, sortOrder);
         return ResponseEntity.ok(response);
@@ -67,10 +50,8 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductDetailResponseDto> getProduct(
             @PathVariable Long id,
-            HttpServletRequest httpRequest
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        getAdminIdFromSession(httpRequest);
-
         ProductDetailResponseDto response = productService.getProduct(id);
         return ResponseEntity.ok(response);
     }
@@ -80,10 +61,8 @@ public class ProductController {
     public ResponseEntity<Void> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody UpdateProductRequestDto request,
-            HttpServletRequest httpRequest
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        getAdminIdFromSession(httpRequest);
-
         productService.updateProduct(id, request);
         return ResponseEntity.ok().build();
     }
@@ -93,10 +72,8 @@ public class ProductController {
     public ResponseEntity<Void> changeStock(
             @PathVariable Long id,
             @Valid @RequestBody ChangeStockRequestDto request,
-            HttpServletRequest httpRequest
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        getAdminIdFromSession(httpRequest);
-
         productService.changeStock(id, request);
         return ResponseEntity.ok().build();
     }
@@ -106,10 +83,8 @@ public class ProductController {
     public ResponseEntity<Void> changeStatus(
             @PathVariable Long id,
             @Valid @RequestBody ChangeStatusRequestDto request,
-            HttpServletRequest httpRequest
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        getAdminIdFromSession(httpRequest);
-
         productService.changeStatus(id, request);
         return ResponseEntity.ok().build();
     }
@@ -118,10 +93,8 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long id,
-            HttpServletRequest httpRequest
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        getAdminIdFromSession(httpRequest);
-
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
