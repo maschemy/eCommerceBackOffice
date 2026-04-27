@@ -1,6 +1,9 @@
 package com.ecommercebackoffice.order.entity;
 
+import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.common.entity.BaseEntity;
+import com.ecommercebackoffice.customer.entity.Customer;
+import com.ecommercebackoffice.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
