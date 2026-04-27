@@ -1,5 +1,7 @@
 package com.ecommercebackoffice.admin.enums;
 
+import com.ecommercebackoffice.common.exception.AdminPermissionException;
+
 public enum AdminStatus {
     PENDING,    // 승인대기
     ACTIVE,     // 활성
@@ -9,7 +11,7 @@ public enum AdminStatus {
 
     public void validateLogin() {
         if (this != ACTIVE) {
-            throw new IllegalStateException(getMessage());
+            throw new AdminPermissionException(getMessage());
         }
     }
 
