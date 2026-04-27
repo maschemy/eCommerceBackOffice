@@ -8,13 +8,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDateTime;
-
-@SQLDelete(sql = "UPDATE orders SET deletedAt = NOW() WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 @Getter
 @Entity
 @Table(name = "orders")
@@ -29,7 +23,6 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.READY;
     private String cancelReason;
-    private LocalDateTime deletedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "admin_id", nullable = false)
@@ -50,5 +43,20 @@ public class Order extends BaseEntity {
         this.orderNumber = orderNumber;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+    }
+
+    public void update(OrderStatus status) {
+        if (this.status == OrderStatus.READY && status == OrderStatus.COMPLETE) {
+            throw new IllegalStateException("준비중 -> 배송중 -> 배송완료: 절차를 거쳐야 합니다");
+        }
+        this.status = status;
+    }
+
+    public void cancel(String cancelReason) {
+        if (this.status != OrderStatus.READY) {
+            throw new IllegalStateException("준비중일때만 취소 가능합니다");
+        }
+        this.status = OrderStatus.CANCEL;
+        this.cancelReason = cancelReason;
     }
 }

@@ -144,4 +144,43 @@ public class OrderService {
                 order.getAdmin().getRole()
         );
     }
+
+    // 주문 상태 수정(준비중 -> 배송중 -> 배송완료)
+    @Transactional
+    public UpdateOrderResponseDto update(Long id, UpdateOrderRequestDto request) {
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> new IllegalStateException("없는 주문")
+        );
+
+        if (order.getStatus() == OrderStatus.COMPLETE) {
+            throw new IllegalStateException("배송완료된 주문은 상태를 변경할 수 없습니다");
+        }
+
+        order.update(request.getStatus());
+
+        return new UpdateOrderResponseDto(
+                order.getId(),
+                order.getOrderNumber(),
+                order.getStatus(),
+                order.getModifiedAt()
+        );
+    }
+
+    // 주문 취소
+    @Transactional
+    public CancelOrderResponseDto cancel(Long id, CancelOrderRequestDto request) {
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> new IllegalStateException("없는 주문")
+        );
+
+        order.cancel(request.getCancelReason());
+
+        return new CancelOrderResponseDto(
+                order.getId(),
+                order.getOrderNumber(),
+                order.getStatus(),
+                order.getCancelReason(),
+                order.getModifiedAt()
+        );
+    }
 }

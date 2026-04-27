@@ -5,6 +5,7 @@ import com.ecommercebackoffice.common.Const;
 import com.ecommercebackoffice.order.dto.*;
 import com.ecommercebackoffice.order.entity.OrderStatus;
 import com.ecommercebackoffice.order.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,28 @@ public class OrderController {
     ) {
 
         ReadOneOrderResponseDto result = orderService.getOne(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    // 주문 상태 수정 (준비중 -> 배송중 -> 배송완료)
+    @PatchMapping("/{id}")
+    public ResponseEntity<UpdateOrderResponseDto> updateOrder(
+            @PathVariable Long id,
+            @RequestBody UpdateOrderRequestDto request
+    ) {
+        UpdateOrderResponseDto result = orderService.update(id, request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    // 주문 취소
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<CancelOrderResponseDto> cancelOrder(
+            @PathVariable Long id,
+            @Valid @RequestBody CancelOrderRequestDto request
+    ) {
+        CancelOrderResponseDto result = orderService.cancel(id, request);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
