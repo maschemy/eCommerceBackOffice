@@ -46,7 +46,7 @@ public class ProductController {
     public ResponseEntity<PageResponseDto<ProductListResponseDto>> getProducts(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductCategory category,
-            @RequestParam(required = false)ProductStatus status,
+            @RequestParam(required = false) ProductStatus status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
