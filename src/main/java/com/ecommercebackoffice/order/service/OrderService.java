@@ -56,7 +56,8 @@ public class OrderService {
                     + product.getStock());
         }
 
-        // 추후 재고 차감 처리 로직 구현
+        // 재고 처리 메서드
+        product.changeStockDueToOrder(request.getQuantity(), OrderStatus.READY);
 
         // 주문번호 생성 -> 예시) ORD-20260424-0001
         String orderNumber = "ORD" + "-"
@@ -64,7 +65,7 @@ public class OrderService {
                 + UUID.randomUUID().toString().substring(0, 4);
 
         // 총 주문 금액 계산
-        Integer totalPrice = product.getPrice() * request.getQuantity();
+        Long totalPrice = product.getPrice() * Long.valueOf(request.getQuantity());
 
         // 요청에 따른 주문 생성
         Order order = new Order(
@@ -193,7 +194,11 @@ public class OrderService {
                 () -> new IllegalStateException("없는 주문")
         );
 
+        // 주문 상태 CANCEL로 수정, 취소 사유 null 에서 요청데이터로 수정
         order.cancel(request.getCancelReason());
+
+        // 재고 처리 메서드
+        order.getProduct().changeStockDueToOrder(order.getQuantity(), order.getStatus());
 
         return new CancelOrderResponseDto(
                 order.getId(),

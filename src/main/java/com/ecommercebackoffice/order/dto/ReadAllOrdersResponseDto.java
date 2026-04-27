@@ -11,12 +11,12 @@ public class ReadAllOrdersResponseDto {
     private final String customerName;
     private final String productName;
     private final Integer quantity;
-    private final Integer totalPrice;
+    private final Long totalPrice;
     private final OrderStatus status;
     private final LocalDateTime createdAt;
     private final String createdBy;
 
-    public ReadAllOrdersResponseDto(Long id, String orderNumber, String customerName, String productName, Integer quantity, Integer totalPrice, OrderStatus status, LocalDateTime createdAt, String createdBy) {
+    public ReadAllOrdersResponseDto(Long id, String orderNumber, String customerName, String productName, Integer quantity, Long totalPrice, OrderStatus status, LocalDateTime createdAt, String createdBy) {
         this.id = id;
         this.orderNumber = orderNumber;
         this.customerName = customerName;
