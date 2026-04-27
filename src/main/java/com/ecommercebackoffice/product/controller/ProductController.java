@@ -97,4 +97,17 @@ public class ProductController {
         productService.changeStock(id, request);
         return ResponseEntity.ok().build();
     }
+
+    // 상태 변경 API
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> changeStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangeStatusRequestDto request,
+            HttpServletRequest httpRequest
+    ) {
+        getAdminIdFromSession(httpRequest);
+
+        productService.changeStatus(id, request);
+        return ResponseEntity.ok().build();
+    }
 }
