@@ -1,9 +1,6 @@
 package com.ecommercebackoffice.product.controller;
 
-import com.ecommercebackoffice.product.dto.CreateProductRequestDto;
-import com.ecommercebackoffice.product.dto.PageResponseDto;
-import com.ecommercebackoffice.product.dto.ProductDetailResponseDto;
-import com.ecommercebackoffice.product.dto.ProductListResponseDto;
+import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.ProductCategory;
 import com.ecommercebackoffice.product.entity.ProductStatus;
 import com.ecommercebackoffice.product.service.ProductService;
@@ -73,5 +70,18 @@ public class ProductController {
 
         ProductDetailResponseDto response = productService.getProduct(id);
         return ResponseEntity.ok(response);
+    }
+
+    // 상품 정보 수정 API
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProductRequestDto request,
+            HttpServletRequest httpRequest
+    ) {
+        getAdminIdFromSession(httpRequest);
+
+        productService.updateProduct(id, request);
+        return ResponseEntity.ok().build();
     }
 }
