@@ -3,6 +3,7 @@ package com.ecommercebackoffice.admin.entity;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.common.entity.BaseEntity;
+import com.ecommercebackoffice.common.exception.AdminPermissionException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -91,7 +92,7 @@ public class Admin extends BaseEntity {
 
     public void approve() {
         if (this.status != AdminStatus.PENDING) {
-            throw new IllegalStateException("승인대기 상태의 관리자만 승인할 수 있습니다.");
+            throw new AdminPermissionException("승인대기 상태의 관리자만 승인할 수 있습니다.");
         }
 
         this.status = AdminStatus.ACTIVE;
@@ -101,7 +102,7 @@ public class Admin extends BaseEntity {
     public void reject(String reject)
     {
         if (this.status != AdminStatus.PENDING) {
-            throw new IllegalStateException("승인대기 상태의 관리자만 거부할 수 있습니다.");
+            throw new AdminPermissionException("승인대기 상태의 관리자만 거부할 수 있습니다.");
         }
 
         this.status = AdminStatus.REJECTED;

@@ -138,6 +138,6 @@ public class AdminController {
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @Valid @RequestBody ChangePasswordRequestDto request) {
         adminService.changePassword(loginAdmin, request);
-        return ResponseEntity.ok("비밀번호가 변경되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경되었습니다.");
     }
 }
