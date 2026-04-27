@@ -13,14 +13,14 @@ public class ReadOneOrderResponseDto {
     private final String customerEmail;
     private final String productName;
     private final Integer quantity;
-    private final Integer totalPrice;
+    private final Long totalPrice;
     private final OrderStatus status;
     private final LocalDateTime createdAt;
     private final String createdByName;
     private final String createdByEmail;
     private final AdminRole createdByRole;
 
-    public ReadOneOrderResponseDto(String orderNumber, String customerName, String customerEmail, String productName, Integer quantity, Integer totalPrice, OrderStatus status, LocalDateTime createdAt, String createdByName, String createdByEmail, AdminRole createdByRole) {
+    public ReadOneOrderResponseDto(String orderNumber, String customerName, String customerEmail, String productName, Integer quantity, Long totalPrice, OrderStatus status, LocalDateTime createdAt, String createdByName, String createdByEmail, AdminRole createdByRole) {
         this.orderNumber = orderNumber;
         this.customerName = customerName;
         this.customerEmail = customerEmail;

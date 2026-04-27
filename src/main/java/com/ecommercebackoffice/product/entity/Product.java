@@ -1,6 +1,7 @@
 package com.ecommercebackoffice.product.entity;
 
 import com.ecommercebackoffice.common.entity.BaseEntity;
+import com.ecommercebackoffice.order.entity.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,5 +74,14 @@ public class Product extends BaseEntity {
     // 관리자가 수동으로 상품 상태 변경
     public void changeStatus(ProductStatus status) {
         this.status = status;
+    }
+
+    // 주문 생성, 취소에 따른 재고 처리
+    public void changeStockDueToOrder(Integer quantity, OrderStatus status) {
+        if (status == OrderStatus.CANCEL) {
+            this.stock += quantity;
+        } else {
+            this.stock -= quantity;
+        }
     }
 }
