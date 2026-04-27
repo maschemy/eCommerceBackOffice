@@ -44,16 +44,24 @@ public class CustomerService {
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(sortDirection, sortBy));
 
-        Page<Customer> customers = customerRepository.findAllWithFilter(keyword, status, pageable);
+        Page<Object[]> customers = customerRepository.findAllWithFilter(keyword, status, pageable);
 
-        return customers.map(customer -> new SearchCustomerResponseDto(
-                        customer.getId(),
-                        customer.getName(),
-                        customer.getEmail(),
-                        customer.getPhoneNumber(),
-                        customer.getStatus(),
-                        customer.getCreatedAt()
-                ));
+        return customers.map(row -> {
+            Customer customer = (Customer) row[0];
+            Long totalOrderCount = ((Number) row[1]).longValue(); // row[1]를 Number로 캐시틍-> .longValue()로 Long으로 변환
+            Long totalOrderAmount = ((Number) row[2]).longValue();
+
+            return new SearchCustomerResponseDto(
+                    customer.getId(),
+                    customer.getName(),
+                    customer.getEmail(),
+                    customer.getPhoneNumber(),
+                    customer.getStatus(),
+                    customer.getCreatedAt(),
+                    totalOrderCount,
+                    totalOrderAmount
+            );
+        });
     }
 
     /**
@@ -63,16 +71,27 @@ public class CustomerService {
      */
     @Transactional(readOnly = true)
     public SearchCustomerResponseDto findOne(Long customerId) {
-        Customer customer = customerRepository.findByIdAndDeletedAtIsNull(customerId).orElseThrow(
-                () -> new NotFoundException("고객 id가 존재하지 않습니다.")
-        );
+        List<Object[]> results = customerRepository.findOneWithOrderStats(customerId);
+
+        if (results.isEmpty()) {
+            throw new NotFoundException("고객 id가 존재하지 않습니다.");
+        }
+
+        Object[] row = results.get(0);
+
+        Customer customer = (Customer) row[0];
+        Long totalOrderCount = ((Number) row[1]).longValue();
+        Long totalOrderAmount = ((Number) row[2]).longValue();
+
         return new SearchCustomerResponseDto(
                 customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhoneNumber(),
                 customer.getStatus(),
-                customer.getCreatedAt()
+                customer.getCreatedAt(),
+                totalOrderCount,
+                totalOrderAmount
         );
     }
 

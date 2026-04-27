@@ -20,12 +20,12 @@ public class CustomerController {
     /**
      * 고객 목록 조회
      * 키워드, 상태, 페이징, 정렬 조건 지원
-     * @param keyword
-     * @param status
-     * @param page
-     * @param size
-     * @param sortBy
-     * @param direction
+     * @param keyword (이름, 이메일) - 없으면 전체 조회
+     * @param status 상태 필터(ACTIVE / INACTIVE / SUSPENDED) - 없으면 전체 조회)
+     * @param page 페이지 번호 ( 기본값: 1)
+     * @param size 페이지당 개수 (기본값: 10)
+     * @param sortBy 정렬 기준 (기본값: createdAt )
+     * @param direction 정렬 방향 ( 기본값: desc )
      * @return
      */
     @GetMapping
