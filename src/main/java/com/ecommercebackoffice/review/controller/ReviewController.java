@@ -43,4 +43,13 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+    // 리뷰 삭제 API
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReview(
+            @PathVariable Long id,
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
+    ) {
+        reviewService.deleteReview(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
