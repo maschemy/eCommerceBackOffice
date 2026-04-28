@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.product.entity;
 
+import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.common.entity.BaseEntity;
 import com.ecommercebackoffice.order.entity.OrderStatus;
 import jakarta.persistence.*;
@@ -35,11 +36,12 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private ProductStatus status;
 
-    @Column(nullable = false)
-    private Long adminId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id", nullable = false)
+    private Admin adminId;
 
     public Product(String name, ProductCategory category, Long price,
-                   Integer stock, ProductStatus status, Long adminId) {
+                   Integer stock, ProductStatus status, Admin adminId) {
         this.name = name;
         this.category = category;
         this.price = price;
