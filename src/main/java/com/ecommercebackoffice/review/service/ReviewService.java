@@ -1,6 +1,7 @@
 package com.ecommercebackoffice.review.service;
 
 import com.ecommercebackoffice.product.dto.PageResponseDto;
+import com.ecommercebackoffice.review.dto.ReviewDetailResponseDto;
 import com.ecommercebackoffice.review.dto.ReviewListResponseDto;
 import com.ecommercebackoffice.review.entity.Review;
 import com.ecommercebackoffice.review.repository.ReviewRepository;
@@ -50,7 +51,17 @@ public class ReviewService {
         return new PageResponseDto<>(responsePage);
     }
 
+    // 리뷰 상세 조회
+    public ReviewDetailResponseDto getReview(Long id) {
+        Review review = findReviewById(id);
+        return new ReviewDetailResponseDto(review);
+    }
+
     // 정렬 조건 생성 메서드
     private Sort createSort(String sortBy, String sortOrder) {
+    }
+
+    // 리뷰 조회 메서드
+    private Review findReviewById(Long id) {
     }
 }
