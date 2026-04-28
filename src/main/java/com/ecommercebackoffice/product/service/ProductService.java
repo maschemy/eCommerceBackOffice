@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.product.service;
 
+import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.entity.ProductCategory;
@@ -20,7 +21,7 @@ public class ProductService {
 
     // 입력 받은 정보로 새로운 상품 등록
     @Transactional
-    public Long createProduct(CreateProductRequestDto request, Long adminId) {
+    public Long createProduct(CreateProductRequestDto request, Admin adminId) {
         Product product = new Product(
                 request.getName(),
                 request.getCategory(),
@@ -94,7 +95,10 @@ public class ProductService {
     @Transactional
     public ProductDetailResponseDto getProduct(Long id) {
         Product product = findProductById(id);
-        return new ProductDetailResponseDto(product, "홍길동", "admin@test.com");
+
+        Admin admin = product.getAdminId();
+
+        return new ProductDetailResponseDto(product, admin.getName(), admin.getEmail());
     }
 
     // 상품명, 카테고리, 가격 수정

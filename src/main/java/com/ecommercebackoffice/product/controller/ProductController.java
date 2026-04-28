@@ -1,5 +1,7 @@
 package com.ecommercebackoffice.product.controller;
 
+import com.ecommercebackoffice.admin.entity.Admin;
+import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
 import com.ecommercebackoffice.common.Const;
 import com.ecommercebackoffice.product.dto.*;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final AdminRepository adminRepository;
 
     // 상품 등록 API
     @PostMapping
@@ -25,7 +28,9 @@ public class ProductController {
             @Valid @RequestBody CreateProductRequestDto request,
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        productService.createProduct(request, loginAdmin.adminId());
+        Admin admin = adminRepository.findById(loginAdmin.adminId())
+                .orElseThrow(() -> new IllegalStateException("관리자를 찾을 수 없습니다."));
+        productService.createProduct(request, admin);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
