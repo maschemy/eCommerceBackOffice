@@ -57,8 +57,8 @@ public class Customer extends BaseEntity {
      * @param phoneNumber
      */
     public void update(String name, String email, String phoneNumber){
-        if(name != null) this.name = name;
-        if(email != null) this.email = email;
+        if(name != null && !name.isBlank()) this.name = name;
+        if(email != null && !email.isBlank()) this.email = email;
         if(phoneNumber != null) this.phoneNumber = phoneNumber;
     }
 

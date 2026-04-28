@@ -10,6 +10,16 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
+    /**
+     * 주문 리스트 전체 조회(정렬, 필터, 페이징)
+     * 고객, 상품 테이블 join fetch
+     * 관리자 테이블 left join (cs 주문의 경우에만 관리자 정보 포함)
+     * 파라미터 없을 경우 전체 조회
+     * @param keyword 고객명, 주문번호로 검색(필터)
+     * @param status 주문 상태 필터 (READY, DELIVERY, COMPLETE)
+     * @param pageable 페이지 정보
+     * @return 페이지
+     */
     @Query("SELECT o FROM Order o " +
             "JOIN FETCH o.customer c " +
             "JOIN FETCH o.product p " +
@@ -23,6 +33,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             Pageable pageable
     );
 
+    /**
+     * 주문 id로 단건 조회
+     * @param id must not be {@literal null}.
+     * @return id 동일한 주문 정보
+     */
     @Override
     @Query("SELECT o FROM Order o " +
             "JOIN FETCH o.customer c " +

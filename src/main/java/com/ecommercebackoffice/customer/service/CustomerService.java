@@ -58,6 +58,7 @@ public class CustomerService {
                     customer.getPhoneNumber(),
                     customer.getStatus(),
                     customer.getCreatedAt(),
+                    customer.getModifiedAt(),
                     totalOrderCount,
                     totalOrderAmount
             );
@@ -90,6 +91,7 @@ public class CustomerService {
                 customer.getPhoneNumber(),
                 customer.getStatus(),
                 customer.getCreatedAt(),
+                customer.getModifiedAt(),
                 totalOrderCount,
                 totalOrderAmount
         );
@@ -108,6 +110,7 @@ public class CustomerService {
         );
 
         customer.update(request.getName(), request.getEmail(), request.getPhoneNumber());
+
 
         return new UpdateCustomerResponseDto(
                 customer.getName(),
