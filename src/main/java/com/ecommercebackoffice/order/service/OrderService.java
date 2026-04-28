@@ -3,7 +3,7 @@ package com.ecommercebackoffice.order.service;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
-import com.ecommercebackoffice.common.exception.QuantityGreaterThanStockException;
+import com.ecommercebackoffice.common.exception.*;
 import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import com.ecommercebackoffice.order.dto.*;
@@ -39,15 +39,15 @@ public class OrderService {
     @Transactional
     public CreateOrderResponseDto save(CreateOrderRequestDto request, LoginAdmin loginAdmin) {
         Admin admin = adminRepository.findById(loginAdmin.adminId()).orElseThrow(
-                () -> new IllegalStateException("없는 관리자"));
+                () -> new NotFoundException("없는 관리자"));
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
-                () -> new IllegalStateException("없는 고객"));
+                () -> new NotFoundException("없는 고객"));
         Product product = productRepository.findById(request.getProductId()).orElseThrow(
-                () -> new IllegalStateException("없는 상품"));
+                () -> new NotFoundException("없는 상품"));
 
         // 상품이 판매중이 아닐 경우 예외 발생
         if (product.getStatus() != ProductStatus.ON_SALE) {
-            throw new IllegalStateException("상품이 " + product.getStatus().getDescription() + "입니다.");
+            throw new ProductNotSellException("상품이 " + product.getStatus().getDescription() + "입니다.");
         }
 
         // 재고가 주문 수량보다 부족한 경우 예외 발생
@@ -58,6 +58,9 @@ public class OrderService {
 
         // 재고 처리 메서드
         product.changeStockDueToOrder(request.getQuantity(), OrderStatus.READY);
+
+        // 상품 상태 변경 메서드
+        product.changeStock(0);
 
         // 주문번호 생성 -> 예시) ORD-20260424-0001
         String orderNumber = "ORD" + "-"
@@ -106,17 +109,17 @@ public class OrderService {
 
         // 정렬 기준 검증
         if (!sortableColumns.contains(sortBy)) {
-            throw new IllegalStateException("잘못된 정렬 기준");
+            throw new SortByException("잘못된 정렬 기준");
         }
 
         // 정렬 방식 검증
         if (!direction.equals("ASC") && !direction.equals("DESC")) {
-            throw new IllegalStateException("ASC 또는 DESC로 입력(대소문자 구분): " + direction);
+            throw new SortDirectionException("ASC 또는 DESC로 입력(대소문자 구분): " + direction);
         }
 
         // 페이지 정보 검증
         if (page < 0 || size < 0) {
-            throw new IllegalStateException("page와 size는 음수가 될 수 없습니다 page: "
+            throw new MinusPageException("page와 size는 음수가 될 수 없습니다 page: "
                     + page + "size: " + size);
         }
 
@@ -148,7 +151,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public ReadOneOrderResponseDto getOne(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(
-                () -> new IllegalStateException("없는 주문")
+                () -> new NotFoundException("없는 주문")
         );
 
         return new ReadOneOrderResponseDto(
@@ -170,11 +173,11 @@ public class OrderService {
     @Transactional
     public UpdateOrderResponseDto update(Long id, UpdateOrderRequestDto request) {
         Order order = orderRepository.findById(id).orElseThrow(
-                () -> new IllegalStateException("없는 주문")
+                () -> new NotFoundException("없는 주문")
         );
 
         if (order.getStatus() == OrderStatus.COMPLETE) {
-            throw new IllegalStateException("배송완료된 주문은 상태를 변경할 수 없습니다");
+            throw new CompleteNotChangeException("배송완료된 주문은 상태를 변경할 수 없습니다");
         }
 
         order.update(request.getStatus());
@@ -191,7 +194,7 @@ public class OrderService {
     @Transactional
     public CancelOrderResponseDto cancel(Long id, CancelOrderRequestDto request) {
         Order order = orderRepository.findById(id).orElseThrow(
-                () -> new IllegalStateException("없는 주문")
+                () -> new NotFoundException("없는 주문")
         );
 
         // 주문 상태 CANCEL로 수정, 취소 사유 null 에서 요청데이터로 수정
@@ -199,6 +202,9 @@ public class OrderService {
 
         // 재고 처리 메서드
         order.getProduct().changeStockDueToOrder(order.getQuantity(), order.getStatus());
+
+        // 상품 상태 변경 메서드
+        order.getProduct().changeStock(0);
 
         return new CancelOrderResponseDto(
                 order.getId(),
