@@ -16,7 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // 키워드, 카테고리, 상태 조건에 따라 상품을 조회
     @Query("SELECT p FROM Product p WHERE " +
            "(:keyword IS NULL OR p.name LIKE %:keyword%) AND " +
-           "(:status IS NULL OR p.category = :category) AND " +
+           "(:category IS NULL OR p.category = :category) AND " +
            "(:status IS NULL OR p.status = :status)")
     Page<Product> findByConditions(
             @Param("keyword") String keyword,

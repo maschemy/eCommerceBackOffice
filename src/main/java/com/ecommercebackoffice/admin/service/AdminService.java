@@ -67,9 +67,6 @@ public class AdminService {
                 )
         );
         String keyword = request.getKeyword();
-        if (keyword == null) {
-            keyword = ""; //null 값체크
-        }
 
         Page<Admin> admins =
                 adminRepository.searchNameOrEmail(
@@ -124,7 +121,7 @@ public class AdminService {
     @Transactional
     public UpdateRoleResponseDto updateRole(Long adminId, UpdateRoleRequestDto request) {
         Admin admin = findAdminId(adminId);
-        admin.roleUpdate(request.getRole());
+        admin.roleChange(request.getRole());
 
         return new UpdateRoleResponseDto(admin.getRole());
     }
@@ -133,7 +130,7 @@ public class AdminService {
     @Transactional
     public UpdateStatusResponseDto updateStatus(Long adminId, UpdateStatusRequestDto request) {
         Admin admin = findAdminId(adminId);
-        admin.statusUpdate(request.getStatus());
+        admin.statusChange(request.getStatus());
 
         return new UpdateStatusResponseDto(admin.getStatus());
     }

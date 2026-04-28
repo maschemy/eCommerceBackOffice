@@ -21,7 +21,10 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
                 WHERE a.name LIKE %:keyword%
                    OR a.email LIKE %:keyword%
             """)
-    Page<Admin> searchNameOrEmail(@Param("keyword") String keyword, Pageable pageable);
+    Page<Admin> searchNameOrEmail(
+            @Param("keyword") String keyword,
+            Pageable pageable
+    );
 
     long countByDeletedAtIsNull();
     long countByStatusAndDeletedAtIsNull(AdminStatus status);

@@ -32,7 +32,7 @@ public class AdminController {
     @GetMapping
     public ResponseEntity<Page<SearchAdminResponseDto>> getAllAdmin(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
-            @Valid SearchAdminRequestDto request) {
+            @Valid @RequestBody SearchAdminRequestDto request) {
         loginAdmin.allowSuperAdmin();
         Page<SearchAdminResponseDto> result = adminService.getAll(request);
         return ResponseEntity.status(HttpStatus.OK).body(result);
