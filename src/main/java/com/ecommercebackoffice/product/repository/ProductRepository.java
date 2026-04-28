@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 // JPA를 활용한 상품 데이터 접근 계층을 구현
 public interface ProductRepository extends JpaRepository<Product, Long> {
     // 키워드, 카테고리, 상태 조건에 따라 상품을 조회
@@ -22,5 +24,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("status") ProductStatus status,
             Pageable pageable
     );
+
+    long countByStatus(ProductStatus status);
+    long countByStockLessThanEqual(int stock);
+
 
 }

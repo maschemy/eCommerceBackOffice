@@ -1,6 +1,7 @@
 package com.ecommercebackoffice.admin.repository;
 
 import com.ecommercebackoffice.admin.entity.Admin;
+import com.ecommercebackoffice.admin.enums.AdminStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +22,9 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
                    OR a.email LIKE %:keyword%
             """)
     Page<Admin> searchNameOrEmail(@Param("keyword") String keyword, Pageable pageable);
+
+    long countByDeletedAtIsNull();
+    long countByStatusAndDeletedAtIsNull(AdminStatus status);
 }
 
 

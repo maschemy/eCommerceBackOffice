@@ -15,7 +15,6 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
     boolean existsByEmail(String email);
     Optional<Customer> findByIdAndDeletedAtIsNull(Long id);
 
-
     /**
      * 고객 리스트 조회를 위한 쿼리
      * @param keyword
@@ -46,4 +45,8 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
             "AND c.id = :customerId " +
             "GROUP BY c")
     List<Object[]> findOneWithOrderStats(@Param("customerId") Long customerId);
+
+    long countByDeletedAtIsNull();  // 전체 고객 수
+    long countByStatusAndDeletedAtIsNull(CustomerStatus status);    //상태별 고객 수
+
 }
