@@ -3,6 +3,7 @@ package com.ecommercebackoffice.review.controller;
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
 import com.ecommercebackoffice.common.Const;
 import com.ecommercebackoffice.product.dto.PageResponseDto;
+import com.ecommercebackoffice.review.dto.ReviewDetailResponseDto;
 import com.ecommercebackoffice.review.dto.ReviewListResponseDto;
 import com.ecommercebackoffice.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -31,4 +32,15 @@ public class ReviewController {
                 keyword, rating, page, size ,sortBy, sortOder);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
+    // 리뷰 상세 조회 API
+    @GetMapping("/{id}")
+    public ResponseEntity<ReviewDetailResponseDto> getReview(
+            @PathVariable Long id,
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
+    ) {
+        ReviewDetailResponseDto result = reviewService.getReview(id);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
 }
