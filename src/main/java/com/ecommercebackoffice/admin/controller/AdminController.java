@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,7 +32,7 @@ public class AdminController {
     //────────────────────────────────────관리자전체조회────────────────────────────────────
     @GetMapping
     public ResponseEntity<Page<SearchAdminResponseDto>> getAllAdmin(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @Valid SearchAdminRequestDto request) {
         loginAdmin.allowSuperAdmin();
         Page<SearchAdminResponseDto> result = adminService.getAll(request);
@@ -41,7 +42,7 @@ public class AdminController {
     //────────────────────────────────────관리자상세조회────────────────────────────────────
     @GetMapping("/{adminId}")
     public ResponseEntity<GetOneAdminResponseDto> getOneAdmin(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long adminId) {
         loginAdmin.allowSuperAdmin();
         GetOneAdminResponseDto result = adminService.getOne(adminId);
@@ -51,7 +52,7 @@ public class AdminController {
     //────────────────────────────────────관리자정보수정────────────────────────────────────
     @PatchMapping("/{adminId}")
     public ResponseEntity<UpdateAdminResponseDto> updateAdmin(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long adminId,
             @Valid @RequestBody UpdateAdminRequestDto request) {
         loginAdmin.allowSuperAdmin();
@@ -62,7 +63,7 @@ public class AdminController {
     //────────────────────────────────────관리자역활변경────────────────────────────────────
     @PatchMapping("/{adminId}/role")
     public ResponseEntity<UpdateRoleResponseDto> updateRole(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long adminId,
             @RequestBody @Valid UpdateRoleRequestDto request
     ) {
@@ -74,7 +75,7 @@ public class AdminController {
     //────────────────────────────────────관리자 상태 변경────────────────────────────────────
     @PatchMapping("/{adminId}/status")
     public ResponseEntity<UpdateStatusResponseDto> updateStatus(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long adminId,
             @RequestBody @Valid UpdateStatusRequestDto request
     ) {
@@ -86,7 +87,7 @@ public class AdminController {
     //────────────────────────────────────관리자 삭제────────────────────────────────────
     @DeleteMapping("/{adminId}")
     public ResponseEntity<Void> deleteAdmin(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long adminId) {
         loginAdmin.allowSuperAdmin();
         adminService.deleteAdmin(adminId);
@@ -96,7 +97,7 @@ public class AdminController {
     //────────────────────────────────────관리자 승인────────────────────────────────────
     @PatchMapping("/{adminId}/approve")
     public ResponseEntity<String> approveAdmin(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long adminId) {
         loginAdmin.allowSuperAdmin();
         adminService.approveAdmin(adminId);
@@ -106,7 +107,7 @@ public class AdminController {
     //────────────────────────────────────관리자 거부────────────────────────────────────
     @PatchMapping("/{adminId}/reject")
     public ResponseEntity<String> rejectAdmin(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long adminId,
             @Valid @RequestBody RejectAdminRequestDto request) {
         loginAdmin.allowSuperAdmin();
@@ -118,7 +119,7 @@ public class AdminController {
     //────────────────────────────────────내프로필 조회────────────────────────────────────
     @GetMapping("/me")
     public ResponseEntity<GetMyInfoResponseDto> getInfo(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
+            @AuthenticationPrincipal LoginAdmin loginAdmin
     ) {
         GetMyInfoResponseDto result = adminService.getMyInfo(loginAdmin);
         return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -127,7 +128,7 @@ public class AdminController {
     //────────────────────────────────────내프로필 수정────────────────────────────────────
     @PatchMapping("/me")
     public ResponseEntity<UpdateMyInfoResponseDto> updateInfo(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @Valid @RequestBody UpdateMyInfoRequestDto request
     ) {
         UpdateMyInfoResponseDto result = adminService.updateMyInfo(loginAdmin, request);
@@ -137,7 +138,7 @@ public class AdminController {
     //────────────────────────────────────비밀번호 수정────────────────────────────────────
     @PatchMapping("/me/password")
     public ResponseEntity<String> changePassword(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @Valid @RequestBody ChangePasswordRequestDto request,
             HttpSession session) {
         adminService.changePassword(loginAdmin, request);
