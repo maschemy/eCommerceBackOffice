@@ -4,6 +4,7 @@ import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.customer.entity.CustomerStatus;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
+import com.ecommercebackoffice.dashboard.dto.DashboardRecentDto;
 import com.ecommercebackoffice.dashboard.dto.DashboardResponseDto;
 import com.ecommercebackoffice.dashboard.dto.DashboardSummaryDto;
 import com.ecommercebackoffice.dashboard.dto.DashboradWidgetsDto;
@@ -25,7 +26,8 @@ public class DashboardService {
     public DashboardResponseDto getDashboard(){
         return new DashboardResponseDto(
                 getSummary(),
-                getWidget()
+                getWidget(),
+                getRecentOrder()
         );
     }
 
@@ -54,5 +56,10 @@ public class DashboardService {
         );
     }
 
+    private DashboardRecentDto getRecentOrder(){
+        return new DashboardRecentDto(
+
+        );
+    }
 
 }
