@@ -8,7 +8,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 public class SearchAdminRequestDto {
     @Size(max = 50)

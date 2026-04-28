@@ -13,24 +13,21 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
-@SQLDelete(sql = "UPDATE orders SET deleted_at = NOW() WHERE id = ?")
+@SQLDelete(sql = "UPDATE admins SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 @Entity
 @Getter
-@Table(name="admins")
+@Table(name = "admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Admin extends BaseEntity {
 
-    @Column(name = "approved_at")
+    @Column(name = "approved_at") //승인시간
     private LocalDateTime approvedAt;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at") //삭제시간
     private LocalDateTime deletedAt;
 
-    @Column(name = "rejected_at")
-    private LocalDateTime rejectedAt;
-
-    @Column(name = "reject")
+    @Column(name = "reject") // 거부 사유
     private String reject;
 
     @Id
@@ -38,7 +35,7 @@ public class Admin extends BaseEntity {
     private Long id;
     @Column(nullable = false)
     private String name;
-    @Column(unique = true , nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
     @Column(nullable = false)
     private String password;
@@ -53,8 +50,7 @@ public class Admin extends BaseEntity {
     @Column(nullable = false)
     private AdminStatus status;
 
-    public Admin(String name,String email , String password , String phoneNumber ,AdminRole role)
-    {
+    public Admin(String name, String email, String password, String phoneNumber, AdminRole role) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -63,30 +59,25 @@ public class Admin extends BaseEntity {
         this.status = AdminStatus.PENDING;
     }
 
-    public void adminUpdate(String name , String email, String phoneNumber)
-    {
+    public void adminUpdate(String name, String email, String phoneNumber) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
 
-    public void roleUpdate(AdminRole role) {
+    public void roleChange(AdminRole role) {//회원가입승인
         this.role = role;
-        this.approvedAt = LocalDateTime.now();
     }
 
-    public void statusUpdate(AdminStatus status)
-    {
+    public void statusChange(AdminStatus status) {
         this.status = status;
-        this.approvedAt = LocalDateTime.now();
     }
 
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void passwordChange(String changedPassword)
-    {
+    public void passwordChange(String changedPassword) {
         this.password = changedPassword;
     }
 
@@ -99,14 +90,12 @@ public class Admin extends BaseEntity {
         this.approvedAt = LocalDateTime.now();
     }
 
-    public void reject(String reject)
-    {
+    public void reject(String reject) {
         if (this.status != AdminStatus.PENDING) {
             throw new AdminPermissionException("승인대기 상태의 관리자만 거부할 수 있습니다.");
         }
 
         this.status = AdminStatus.REJECTED;
-        this.rejectedAt = LocalDateTime.now();
         this.reject = reject;
     }
 }
