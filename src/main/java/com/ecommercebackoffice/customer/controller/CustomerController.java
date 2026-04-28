@@ -1,5 +1,7 @@
 package com.ecommercebackoffice.customer.controller;
 
+import com.ecommercebackoffice.auth.dto.LoginAdmin;
+import com.ecommercebackoffice.common.Const;
 import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.entity.CustomerStatus;
 import com.ecommercebackoffice.customer.service.CustomerService;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerController {
     private final CustomerService customerService;
 
+
+
     /**
      * 고객 목록 조회
      * 키워드, 상태, 페이징, 정렬 조건 지원
@@ -30,6 +34,7 @@ public class CustomerController {
      */
     @GetMapping
     public ResponseEntity<Page<SearchCustomerResponseDto>> getAllCustomer(
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) CustomerStatus status,
             @RequestParam(defaultValue = "1") int page,
@@ -47,7 +52,9 @@ public class CustomerController {
      * @return
      */
     @GetMapping("/{customerId}")
-    public ResponseEntity<SearchCustomerResponseDto> getOneCustomer(@PathVariable Long customerId){
+    public ResponseEntity<SearchCustomerResponseDto> getOneCustomer(
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @PathVariable Long customerId){
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findOne(customerId));
     }
 
@@ -59,6 +66,7 @@ public class CustomerController {
      */
     @PatchMapping("/{customerId}")
     public ResponseEntity<UpdateCustomerResponseDto> updateCustomerInfo(
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @Valid
             @RequestBody UpdateCustomerRequestDto request,
             @PathVariable Long customerId
@@ -74,6 +82,7 @@ public class CustomerController {
      */
     @PatchMapping("/{customerId}/status")
     public ResponseEntity<UpdateCustomerStatusResponseDto> updateCustomerStatus(
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
             @Valid @RequestBody UpdateCustomerStatusRequestDto request,
             @PathVariable Long customerId
     ){
@@ -86,7 +95,9 @@ public class CustomerController {
      * @return
      */
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<Void> deleteCustomerId(@PathVariable Long customerId){
+    public ResponseEntity<Void> deleteCustomerId(
+            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @PathVariable Long customerId){
         customerService.delete(customerId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

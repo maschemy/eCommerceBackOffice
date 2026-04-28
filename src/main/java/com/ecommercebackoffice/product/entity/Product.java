@@ -1,6 +1,7 @@
 package com.ecommercebackoffice.product.entity;
 
 import com.ecommercebackoffice.common.entity.BaseEntity;
+import com.ecommercebackoffice.order.entity.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ public class Product extends BaseEntity {
     private ProductCategory category;
 
     @Column(nullable = false)
-    private Integer price;
+    private Long price;
 
     @Column(nullable = false)
     private Integer stock;
@@ -37,7 +38,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Long adminId;
 
-    public Product(String name, ProductCategory category, Integer price,
+    public Product(String name, ProductCategory category, Long price,
                    Integer stock, ProductStatus status, Long adminId) {
         this.name = name;
         this.category = category;
@@ -48,7 +49,7 @@ public class Product extends BaseEntity {
     }
 
     // 상품명, 카테고리, 가격만 수정 가능하도록 제한
-    public void updateInfo(String name, ProductCategory category, Integer price) {
+    public void updateInfo(String name, ProductCategory category, Long price) {
         this.name = name;
         this.category = category;
         this.price = price;
@@ -73,5 +74,14 @@ public class Product extends BaseEntity {
     // 관리자가 수동으로 상품 상태 변경
     public void changeStatus(ProductStatus status) {
         this.status = status;
+    }
+
+    // 주문 생성, 취소에 따른 재고 처리
+    public void changeStockDueToOrder(Integer quantity, OrderStatus status) {
+        if (status == OrderStatus.CANCEL) {
+            this.stock += quantity;
+        } else {
+            this.stock -= quantity;
+        }
     }
 }

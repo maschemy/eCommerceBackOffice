@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.product.dto;
 
+import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.entity.ProductCategory;
 import com.ecommercebackoffice.product.entity.ProductStatus;
@@ -15,12 +16,12 @@ public class ProductDetailResponseDto {
     private final Long id;
     private final String name;
     private final ProductCategory category;
-    private final Integer price;
+    private final Long price;
     private final Integer stock;
     private final ProductStatus status;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
-    private final Long adminId;
+    private final Admin adminId;
     private final String adminName;
     private final String adminEmail;
 
