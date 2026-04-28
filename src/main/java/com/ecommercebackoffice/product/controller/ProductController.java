@@ -41,9 +41,9 @@ public class ProductController {
             @RequestParam(defaultValue = "desc") String sortOrder,
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        PageResponseDto<ProductListResponseDto> response = productService.getProducts(
+        PageResponseDto<ProductListResponseDto> result = productService.getProducts(
                 keyword, category, status, page, size, sortBy, sortOrder);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // 상품 상세 조회 API
@@ -52,8 +52,8 @@ public class ProductController {
             @PathVariable Long id,
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
-        ProductDetailResponseDto response = productService.getProduct(id);
-        return ResponseEntity.ok(response);
+        ProductDetailResponseDto result = productService.getProduct(id);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // 상품 정보 수정 API
@@ -64,7 +64,7 @@ public class ProductController {
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
         productService.updateProduct(id, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 재고 변경 API
@@ -75,7 +75,7 @@ public class ProductController {
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
         productService.changeStock(id, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 상태 변경 API
@@ -86,7 +86,7 @@ public class ProductController {
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
         productService.changeStatus(id, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 상품 삭제 API
@@ -96,6 +96,6 @@ public class ProductController {
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
     ) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
