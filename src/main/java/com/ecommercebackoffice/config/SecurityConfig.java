@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -33,11 +35,22 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint) // 401
                         .accessDeniedHandler(jwtAccessDeniedHandler)           // 403
                 )
-                .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/auth/login").permitAll() //로그인 접근허용
-                                .requestMatchers(HttpMethod.POST,"/admins").permitAll()//가입 접근허용
-                                .requestMatchers("/admins/**").hasRole("SUPER_ADMIN")//슈퍼관리자만 접근가능
-                                .anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        // 인증 없이 접근 가능
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/admins").permitAll()
+                        // 관리자 관리: 슈퍼 관리자만
+                        .requestMatchers("/admins/**").hasRole("SUPER_ADMIN")
+                        // 고객 관리
+                        .requestMatchers("/customers/**").hasRole("SUPER_ADMIN")
+                        // 상품 관리
+                        .requestMatchers("/api/products/**").hasAnyRole("SUPER_ADMIN", "OPERATION_ADMIN")
+                        // 주문 관리
+                        .requestMatchers("/orders/**").hasAnyRole("SUPER_ADMIN", "OPERATION_ADMIN", "CS_ADMIN")
+                        // 리뷰 관리
+                        .requestMatchers("/reviews/**").hasAnyRole("SUPER_ADMIN", "OPERATION_ADMIN")
+                        // 나머지는 로그인 필요
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 
