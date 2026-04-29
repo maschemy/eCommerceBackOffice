@@ -178,6 +178,17 @@ feature/도메인명
 - 오전 10:10 / 저녁 19:30
 - - -
 ## 🚀트러블슈팅
+[N+1 문제](./troubleshooting/N+1%20문제%20피드백.md)
+
+[공통 응답 구현](./troubleshooting/공통%20응답%20구현.md)
+
+[JOIN 방식으로 인한 주문 없는 고객 누락](./troubleshooting/JOIN%20방식으로%20인한%20주문%20없는%20고객%20누락.md)
+
+[Spring Security 예외](./troubleshooting/Spring%20Security%20예외.md)
+
+[리뷰 관리 SoftDelete](./troubleshooting/리뷰%20관리%20SoftDelete.md)
+
+[집계 쿼리 불일치](./troubleshooting/집계%20쿼리%20불일치.md)
 
 - - -
 ## 📊 ERD 
