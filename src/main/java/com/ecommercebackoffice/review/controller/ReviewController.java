@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
@@ -19,7 +20,6 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     // 리뷰 리스트 조회 API
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     @GetMapping
     public ResponseEntity<PageResponseDto<ReviewListResponseDto>> getReviews(
             @RequestParam(required = false) String keyword, // 고객명, 상품명
@@ -36,7 +36,6 @@ public class ReviewController {
     }
 
     // 리뷰 상세 조회 API
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ReviewDetailResponseDto> getReview(
             @PathVariable Long id,
