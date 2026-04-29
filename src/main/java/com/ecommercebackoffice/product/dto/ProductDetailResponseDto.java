@@ -1,13 +1,15 @@
 package com.ecommercebackoffice.product.dto;
 
-import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.entity.ProductCategory;
 import com.ecommercebackoffice.product.entity.ProductStatus;
+import com.ecommercebackoffice.review.dto.LatestReview;
+import com.ecommercebackoffice.review.dto.ReviewStatistics;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -21,11 +23,13 @@ public class ProductDetailResponseDto {
     private final ProductStatus status;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
-    private final Admin adminId;
+    private final Long adminId;
     private final String adminName;
     private final String adminEmail;
+    private final ReviewStatistics reviewStatistics;
+    private final List<LatestReview> latestReviews;
 
-    public ProductDetailResponseDto(Product product, String adminName, String adminEmail) {
+    public ProductDetailResponseDto(Product product, String adminName, String adminEmail, ReviewStatistics reviewStatistics, List<LatestReview> latestReviews) {
         this.id = product.getId();
         this.name = product.getName();
         this.category = product.getCategory();
@@ -34,8 +38,10 @@ public class ProductDetailResponseDto {
         this.status = product.getStatus();
         this.createdAt = product.getCreatedAt();
         this.modifiedAt = product.getModifiedAt();
-        this.adminId = product.getAdminId();
+        this.adminId = product.getAdminId().getId();
         this.adminName = adminName;
         this.adminEmail = adminEmail;
+        this.reviewStatistics = reviewStatistics;
+        this.latestReviews = latestReviews;
     }
 }

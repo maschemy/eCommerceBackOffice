@@ -6,6 +6,10 @@ import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.entity.ProductCategory;
 import com.ecommercebackoffice.product.entity.ProductStatus;
 import com.ecommercebackoffice.product.repository.ProductRepository;
+import com.ecommercebackoffice.review.dto.LatestReview;
+import com.ecommercebackoffice.review.dto.ReviewStatistics;
+import com.ecommercebackoffice.review.entity.Review;
+import com.ecommercebackoffice.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+    private final ReviewRepository reviewRepository;
 
     // 입력 받은 정보로 새로운 상품 등록
     @Transactional
@@ -98,7 +103,38 @@ public class ProductService {
 
         Admin admin = product.getAdminId();
 
-        return new ProductDetailResponseDto(product, admin.getName(), admin.getEmail());
+        // 최신 리뷰 3개 가져오기
+        List<Review> latestReviews = reviewRepository.findLatestReviewsByProductId(id);
+
+        // 리뷰 없으면 null 반환
+        if (latestReviews == null) {
+            return new ProductDetailResponseDto(
+                    product,
+                    admin.getName(),
+                    admin.getEmail(),
+                    null,
+                    null);
+        }
+
+        // 최신 리뷰 있을 경우 dto 변환
+        List<LatestReview> latestReviewsDtos = latestReviews
+                .stream()
+                .map(review -> new LatestReview(
+                        review.getOrder().getCustomer().getName(),
+                        review.getRating(),
+                        review.getContent(),
+                        review.getCreatedAt()))
+                .toList();
+
+        // 상품 리뷰 통계 가져오기
+        ReviewStatistics reviewStatistics = reviewRepository.getReviewStatistics(id);
+
+        return new ProductDetailResponseDto(
+                product,
+                admin.getName(),
+                admin.getEmail(),
+                reviewStatistics,
+                latestReviewsDtos);
     }
 
     // 상품명, 카테고리, 가격 수정

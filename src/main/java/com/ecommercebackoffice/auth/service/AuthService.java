@@ -4,6 +4,7 @@ import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.auth.dto.LoginRequest;
 import com.ecommercebackoffice.auth.dto.LoginResponse;
+import com.ecommercebackoffice.auth.jwt.JwtProvider;
 import com.ecommercebackoffice.common.exception.LoginFailException;
 import com.ecommercebackoffice.config.PasswordEncoder;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ public class AuthService {
 
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtProvider jwtProvider;
 
 
     //────────────────────────────────────로그인────────────────────────────────────
@@ -31,11 +33,18 @@ public class AuthService {
             throw new LoginFailException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
+        String jwtToken = jwtProvider.createToken(
+                admin.getId(),
+                admin.getEmail(),
+                admin.getRole()
+        );
+
         admin.getStatus().validateLogin();
 
 
         return new LoginResponse(admin.getId(),
                 admin.getEmail(),
-                admin.getRole());
+                admin.getRole(),
+                jwtToken);
     }
 }
