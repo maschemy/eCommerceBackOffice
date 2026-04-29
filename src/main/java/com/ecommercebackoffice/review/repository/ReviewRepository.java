@@ -49,4 +49,13 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             "WHERE r.deletedAt IS NULL " +
             "AND o.product.id = :productId")
     ReviewStatistics getReviewStatistics(@Param("productId") Long productId);
+    long countBydeletedAtIsNull();
+
+    // 평균 평점
+    @Query("SELECT COALESCE(ROUND(AVG(r.rating),1), 0.0) FROM Review r WHERE r.deletedAt IS NULL")
+    Double findAverageRating();
+
+    // 평점별 개수
+    @Query("SELECT r.rating, COUNT(r) FROM Review r WHERE r.deletedAt IS NULL GROUP BY r.rating ORDER BY r.rating")
+    List<Object[]> countByRating();
 }

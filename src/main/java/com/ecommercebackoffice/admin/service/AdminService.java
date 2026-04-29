@@ -5,6 +5,7 @@ import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
 import com.ecommercebackoffice.common.exception.AdminNotFoundException;
+import com.ecommercebackoffice.common.exception.AdminPermissionException;
 import com.ecommercebackoffice.common.exception.PasswordIncorrectException;
 import com.ecommercebackoffice.common.exception.UsedEmailException;
 import com.ecommercebackoffice.config.PasswordEncoder;
@@ -119,8 +120,11 @@ public class AdminService {
 
     //────────────────────────────────────관리자 역활 수정────────────────────────────────────
     @Transactional
-    public UpdateRoleResponseDto updateRole(Long adminId, UpdateRoleRequestDto request) {
-        Admin admin = findAdminId(adminId);
+    public UpdateRoleResponseDto updateRole(LoginAdmin loginAdmin, Long adminId, UpdateRoleRequestDto request) {
+        Admin admin = findAdminId(loginAdmin.adminId());
+        if (loginAdmin.adminId().equals(adminId)) {
+            throw new AdminPermissionException("본인의 역할은 수정할 수 없습니다.");
+        }
         admin.roleChange(request.getRole());
 
         return new UpdateRoleResponseDto(admin.getRole());
@@ -128,8 +132,11 @@ public class AdminService {
 
     //────────────────────────────────────관리자 상태 수정────────────────────────────────────
     @Transactional
-    public UpdateStatusResponseDto updateStatus(Long adminId, UpdateStatusRequestDto request) {
-        Admin admin = findAdminId(adminId);
+    public UpdateStatusResponseDto updateStatus(LoginAdmin loginAdmin, Long adminId, UpdateStatusRequestDto request) {
+        Admin admin = findAdminId(loginAdmin.adminId());
+        if (loginAdmin.adminId().equals(adminId)) {
+            throw new AdminPermissionException("본인의 상태은 수정할 수 없습니다.");
+        }
         admin.statusChange(request.getStatus());
 
         return new UpdateStatusResponseDto(admin.getStatus());
@@ -137,7 +144,11 @@ public class AdminService {
 
     //────────────────────────────────────관리자 삭제────────────────────────────────────
     @Transactional
-    public void deleteAdmin(Long adminId) {
+    public void deleteAdmin(LoginAdmin loginAdmin,Long adminId) {
+
+        if (loginAdmin.adminId().equals(adminId)) {
+            throw new AdminPermissionException("슈퍼관리자는 삭제할 수 없습니다.");
+        }
 
         Admin admin = findAdminId(adminId);
         admin.delete(); //소프트 삭제
@@ -175,7 +186,6 @@ public class AdminService {
         if (request.getCurrentPassword().equals(request.getNewPassword())) {
             throw new PasswordIncorrectException("기존 비밀번호와 동일한 비밀번호입니다.");
         }
-
 
         String encoded = passwordEncoder.encode(request.getNewPassword());
 
