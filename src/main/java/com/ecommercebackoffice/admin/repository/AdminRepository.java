@@ -17,10 +17,13 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     Boolean existsByEmail(String email);
 
     @Query("""
-                SELECT a FROM Admin a
-                WHERE a.name LIKE %:keyword%
-                   OR a.email LIKE %:keyword%
-            """)
+    SELECT a
+    FROM Admin a
+    WHERE (:keyword IS NULL
+        OR :keyword = ''
+        OR a.name LIKE CONCAT('%', :keyword, '%')
+        OR a.email LIKE CONCAT('%', :keyword, '%'))
+""")
     Page<Admin> searchNameOrEmail(
             @Param("keyword") String keyword,
             Pageable pageable
