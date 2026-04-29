@@ -12,6 +12,7 @@ import com.ecommercebackoffice.product.entity.ProductStatus;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import com.ecommercebackoffice.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -89,10 +90,11 @@ public class DashboardService {
         return new DashboardChartsDto(ratingDistribution, customerStatusDistribution, categoryDistribution);
     }
 
-    private DashboardRecentDto getRecentOrder(){
-        return new DashboardRecentDto(
-
-        );
+    private List<DashboardRecentOrderDto> getRecentOrder(){
+        return orderRepository.findRecentOrders(PageRequest.of(0,10))
+                .stream()
+                .map(DashboardRecentOrderDto::new)
+                .toList();
     }
 
 }
