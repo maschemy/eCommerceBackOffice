@@ -1,7 +1,6 @@
 package com.ecommercebackoffice.order.controller;
 
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
-import com.ecommercebackoffice.common.Const;
 import com.ecommercebackoffice.order.dto.*;
 import com.ecommercebackoffice.order.entity.OrderStatus;
 import com.ecommercebackoffice.order.service.OrderService;
@@ -9,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,10 +25,11 @@ public class OrderController {
      * @param loginAdmin 로그인 여부 확인
      * @return HttpStatus 코드, 응답 dto 반환
      */
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
     @PostMapping
     public ResponseEntity<CreateOrderResponseDto> createOrder(
             @Valid @RequestBody CreateOrderRequestDto request,
-            @SessionAttribute(name = Const.LOGIN_ADMIN)LoginAdmin loginAdmin
+            @AuthenticationPrincipal LoginAdmin loginAdmin
             )
     {
         CreateOrderResponseDto result = orderService.save(request, loginAdmin);
@@ -47,6 +49,7 @@ public class OrderController {
      * @param loginAdmin 로그인 여부 확인
      * @return HttpStatus 코드, 응답 dto 반환
      */
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
     @GetMapping
     public ResponseEntity<PaginationOrderDTO> getAllOrder(
             @RequestParam(name = "page", defaultValue = "1") int page,
@@ -55,7 +58,7 @@ public class OrderController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") String sortBy,
             @RequestParam(name = "direction", defaultValue = "DESC") String direction,
             @RequestParam(name = "status", required = false) OrderStatus status,
-            @SessionAttribute(name = Const.LOGIN_ADMIN)LoginAdmin loginAdmin
+            @AuthenticationPrincipal LoginAdmin loginAdmin
     )
     {
         PaginationOrderDTO result = orderService.getAll(page, size, orderNumberOrCustomerName, sortBy, direction, status);
@@ -69,10 +72,11 @@ public class OrderController {
      * @param loginAdmin 로그인 여부 확인
      * @return HttpStatus 코드, 응답 dto 반환
      */
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ReadOneOrderResponseDto> getOneOrder(
             @PathVariable Long id,
-            @SessionAttribute(name = Const.LOGIN_ADMIN)LoginAdmin loginAdmin
+            @AuthenticationPrincipal LoginAdmin loginAdmin
     ) {
 
         ReadOneOrderResponseDto result = orderService.getOne(id);
@@ -87,11 +91,12 @@ public class OrderController {
      * @param loginAdmin 로그인 여부 확인
      * @return HttpStatus 코드, 응답 dto 반환
      */
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<UpdateOrderResponseDto> updateOrder(
             @PathVariable Long id,
             @Valid @RequestBody UpdateOrderRequestDto request,
-            @SessionAttribute(name = Const.LOGIN_ADMIN)LoginAdmin loginAdmin
+            @AuthenticationPrincipal LoginAdmin loginAdmin
     ) {
         UpdateOrderResponseDto result = orderService.update(id, request);
 
@@ -105,11 +110,12 @@ public class OrderController {
      * @param loginAdmin 로그인 여부 확인
      * @return HttpStatus 코드, 응답 dto 반환
      */
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<CancelOrderResponseDto> cancelOrder(
             @PathVariable Long id,
             @Valid @RequestBody CancelOrderRequestDto request,
-            @SessionAttribute(name = Const.LOGIN_ADMIN)LoginAdmin loginAdmin
+            @AuthenticationPrincipal LoginAdmin loginAdmin
     ) {
         CancelOrderResponseDto result = orderService.cancel(id, request);
 
