@@ -1,7 +1,6 @@
 package com.ecommercebackoffice.customer.controller;
 
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
-import com.ecommercebackoffice.common.Const;
 import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.entity.CustomerStatus;
 import com.ecommercebackoffice.customer.service.CustomerService;
@@ -10,10 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
+@PreAuthorize("isAuthenticated()")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/customers")
@@ -95,6 +95,7 @@ public class CustomerController {
      * @param customerId
      * @return
      */
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{customerId}")
     public ResponseEntity<Void> deleteCustomerId(
             @AuthenticationPrincipal LoginAdmin loginAdmin,
