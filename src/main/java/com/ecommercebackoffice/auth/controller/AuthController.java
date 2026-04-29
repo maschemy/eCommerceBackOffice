@@ -21,12 +21,13 @@ public class AuthController {
 
     //────────────────────────────────────로그인────────────────────────────────────
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpSession session)
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request)
     {
         LoginResponse result = authService.login(request);
 
-        session.setAttribute(Const.LOGIN_ADMIN,
-                new LoginAdmin(result.getId(),result.getEmail(),result.getRole()));
+//        session.setAttribute(Const.LOGIN_ADMIN,
+//                new LoginAdmin(result.getId(),result.getEmail(),result.getRole()));
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
