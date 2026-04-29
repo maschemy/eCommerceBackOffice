@@ -12,8 +12,13 @@ public class DashboardSummaryDto {
     private final long lowStockProducts; // 5개 이하 재고를 가진 상품 수
     private final long totalOrders;
     private final long todayOrders;
+    private final long totalReview;
+    private final double reviewAverage;
 
-    public DashboardSummaryDto(long totalAdmin, long activeAdmin, long totalCustomers, long activeCustomers, long totalProducts, long lowStockProducts, long totalOrders, long todayOrders) {
+    public DashboardSummaryDto(
+            long totalAdmin, long activeAdmin, long totalCustomers, long activeCustomers,
+            long totalProducts, long lowStockProducts, long totalOrders, long todayOrders,
+            long totalReview, double reviewAverage) {
         this.totalAdmin = totalAdmin;
         this.activeAdmin = activeAdmin;
         this.totalCustomers = totalCustomers;
@@ -22,5 +27,7 @@ public class DashboardSummaryDto {
         this.lowStockProducts = lowStockProducts;
         this.totalOrders = totalOrders;
         this.todayOrders = todayOrders;
+        this.totalReview = totalReview;
+        this.reviewAverage = reviewAverage;
     }
 }

@@ -29,4 +29,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     long countByStockLessThanEqual(int stock);
 
 
+    // 카테고리별 상품 수
+    @Query("SELECT p.category, COUNT(p) FROM Product p GROUP BY p.category")
+    List<Object[]> countByCategory();
 }

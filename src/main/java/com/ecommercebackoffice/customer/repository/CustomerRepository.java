@@ -49,4 +49,7 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
     long countByDeletedAtIsNull();  // 전체 고객 수
     long countByStatusAndDeletedAtIsNull(CustomerStatus status);    //상태별 고객 수
 
+    // 상태별 고객 수
+    @Query("SELECT c.status, COUNT(c) FROM Customer c WHERE c.deletedAt IS NULL GROUP BY c.status ORDER BY c.status")
+    List<Object[]> countByStatus();
 }
