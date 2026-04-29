@@ -1,7 +1,6 @@
 package com.ecommercebackoffice.customer.controller;
 
 import com.ecommercebackoffice.auth.dto.LoginAdmin;
-import com.ecommercebackoffice.common.Const;
 import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.entity.CustomerStatus;
 import com.ecommercebackoffice.customer.service.CustomerService;
@@ -10,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
+@PreAuthorize("isAuthenticated()")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/customers")
@@ -34,7 +35,7 @@ public class CustomerController {
      */
     @GetMapping
     public ResponseEntity<Page<SearchCustomerResponseDto>> getAllCustomer(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) CustomerStatus status,
             @RequestParam(defaultValue = "1") int page,
@@ -53,7 +54,7 @@ public class CustomerController {
      */
     @GetMapping("/{customerId}")
     public ResponseEntity<SearchCustomerResponseDto> getOneCustomer(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long customerId){
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findOne(customerId));
     }
@@ -66,7 +67,7 @@ public class CustomerController {
      */
     @PatchMapping("/{customerId}")
     public ResponseEntity<UpdateCustomerResponseDto> updateCustomerInfo(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @Valid
             @RequestBody UpdateCustomerRequestDto request,
             @PathVariable Long customerId
@@ -82,7 +83,7 @@ public class CustomerController {
      */
     @PatchMapping("/{customerId}/status")
     public ResponseEntity<UpdateCustomerStatusResponseDto> updateCustomerStatus(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @Valid @RequestBody UpdateCustomerStatusRequestDto request,
             @PathVariable Long customerId
     ){
@@ -94,9 +95,10 @@ public class CustomerController {
      * @param customerId
      * @return
      */
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping("/{customerId}")
     public ResponseEntity<Void> deleteCustomerId(
-            @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin,
+            @AuthenticationPrincipal LoginAdmin loginAdmin,
             @PathVariable Long customerId){
         customerService.delete(customerId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
