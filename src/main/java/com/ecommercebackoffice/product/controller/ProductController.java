@@ -26,7 +26,7 @@ public class ProductController {
 
     // 상품 등록 API
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     public ResponseEntity<Void> createProduct(
             @Valid @RequestBody CreateProductRequestDto request,
             @AuthenticationPrincipal LoginAdmin loginAdmin
@@ -39,7 +39,7 @@ public class ProductController {
 
     // 상품 리스트 조회 API
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     public ResponseEntity<PageResponseDto<ProductListResponseDto>> getProducts(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) ProductCategory category,
@@ -57,7 +57,7 @@ public class ProductController {
 
     // 상품 상세 조회 API
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     public ResponseEntity<ProductDetailResponseDto> getProduct(
             @PathVariable Long id,
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
@@ -68,7 +68,7 @@ public class ProductController {
 
     // 상품 정보 수정 API
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     public ResponseEntity<Void> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody UpdateProductRequestDto request,
@@ -80,7 +80,7 @@ public class ProductController {
 
     // 재고 변경 API
     @PatchMapping("/{id}/stock")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     public ResponseEntity<Void> changeStock(
             @PathVariable Long id,
             @Valid @RequestBody ChangeStockRequestDto request,
@@ -92,7 +92,7 @@ public class ProductController {
 
     // 상태 변경 API
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     public ResponseEntity<Void> changeStatus(
             @PathVariable Long id,
             @Valid @RequestBody ChangeStatusRequestDto request,
@@ -104,7 +104,7 @@ public class ProductController {
 
     // 상품 삭제 API
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN','CS_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'OPERATION_ADMIN')")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long id,
             @AuthenticationPrincipal LoginAdmin loginAdmin
