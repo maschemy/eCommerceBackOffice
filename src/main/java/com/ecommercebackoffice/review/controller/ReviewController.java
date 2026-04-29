@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @PreAuthorize("isAuthenticated()")
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
