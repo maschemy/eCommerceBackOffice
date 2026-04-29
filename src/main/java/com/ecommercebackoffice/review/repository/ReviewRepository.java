@@ -26,6 +26,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     long countBydeletedAtIsNull();
 
+    // 평균 평점
     @Query("SELECT COALESCE(ROUND(AVG(r.rating),1), 0.0) FROM Review r WHERE r.deletedAt IS NULL")
     Double findAverageRating();
 

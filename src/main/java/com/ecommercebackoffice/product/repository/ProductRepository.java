@@ -25,7 +25,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             Pageable pageable
     );
 
+    // 상품 상태별 개수
     long countByStatus(ProductStatus status);
+
+    // 특정 재고 이하 상품 출력
     long countByStockLessThanEqual(int stock);
 
 

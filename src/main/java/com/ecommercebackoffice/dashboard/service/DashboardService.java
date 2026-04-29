@@ -35,6 +35,15 @@ public class DashboardService {
         );
     }
 
+    /**
+     * Summary 통계 출력
+     * 전체 관리자 수, 활성 관리자 수
+     * 전체 고객 수, 활성 고객 수
+     * 전체 상품 수, 재고 부족 상품 수: 재고 5개 이하
+     * 전체 주문 수, 오늘 주문 수
+     * 전체 리뷰 수, 평균 평점
+     * @return
+     */
     private DashboardSummaryDto getSummary(){
         return new DashboardSummaryDto(
                 adminRepository.countByDeletedAtIsNull(),
@@ -50,6 +59,16 @@ public class DashboardService {
         );
     }
 
+    /**
+     * Widgets 데이터 출력
+     * 총 매출, 오늘 매출
+     * 준비중 주문 수
+     * 배송중 주문 수
+     * 배송완료 주문 수
+     * 재고 부족 상품 수: 재고 5개 이하
+     * 재고 없음(품절) 상품 수
+     * @return
+     */
     private DashboradWidgetsDto getWidget(){
         return new DashboradWidgetsDto(
                 orderRepository.sumTotalRevenue(OrderStatus.CANCEL),
@@ -62,6 +81,13 @@ public class DashboardService {
         );
     }
 
+    /**
+     * Chart 데이터 출력
+     * 리뷰 평점 분포: 별점별 개수
+     * 고객 상태 분포: 상태별 고객 수
+     * 상품 카테고리 분포: 카테고리별 상품 수
+     * @return
+     */
     private DashboardChartsDto getCharts(){
         // 리뷰 평점 분포
         List<Object[]> ratingData = reviewRepository.countByRating();
@@ -90,6 +116,12 @@ public class DashboardService {
         return new DashboardChartsDto(ratingDistribution, customerStatusDistribution, categoryDistribution);
     }
 
+    /**
+     * 최근 주문 목록 출력
+     * 최근 주문 10개 조회
+     * 각 주문의 주요 정보(주문번호, 고객명, 상품명, 금액, 상태) 포함
+     * @return
+     */
     private List<DashboardRecentOrderDto> getRecentOrder(){
         return orderRepository.findRecentOrders(PageRequest.of(0,10))
                 .stream()

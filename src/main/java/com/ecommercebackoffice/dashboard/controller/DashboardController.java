@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 public class DashboardController {
     private final DashboardService dashboardService;
 
+    /**
+     * 대쉬보드 출력
+     * @param loginAdmin
+     * @return
+     */
     @GetMapping
     public ResponseEntity<DashboardResponseDto> getDashboard(
             @SessionAttribute(name = Const.LOGIN_ADMIN) LoginAdmin loginAdmin
