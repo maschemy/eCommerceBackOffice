@@ -16,7 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-
+@PreAuthorize("isAuthenticated()")
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
