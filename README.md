@@ -17,7 +17,7 @@
 | ORM | Spring Data JPA, Hibernate  |
 | Database | MySQL 8.4.8                 |
 | Build Tool | Gradle                      |
-| 인증 | Session / Cookie (HttpOnly) |
+| 인증 | JWT / Token |
 | 암호화 | BCrypt                      |
  
 ---
@@ -57,15 +57,17 @@ spring.datasource.url=jdbc:mysql://localhost:3306/eCommerce
 spring.datasource.username=root
 spring.datasource.password=12345678
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.jpa.hibernate.ddl-auto=create
+spring.jpa.hibernate.ddl-auto=update
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 server.servlet.session.timeout=24h
 server.servlet.session.cookie.http-only=true
-spring.sql.init.mode=always
+spring.sql.init.mode=never
 spring.jpa.defer-datasource-initialization=true
 spring.data.web.pageable.default-page-size=10
+jwt.secret=team-six-scecret-key-test-password-12345678
+jwt.expiration=86400000
 ```
 
 ---
@@ -173,7 +175,10 @@ feature/도메인명
 | 상품 (Product) | Orphan Removal |
 
 ### 회의 시간
-- 오전 / 저녁 19:30
+- 오전 10:10 / 저녁 19:30
+- - -
+## 🚀트러블슈팅
+
 - - -
 ## 📊 ERD 
 
@@ -187,17 +192,17 @@ feature/도메인명
 
 | 기능 | Method | URL | 상태코드 |
 |------|--------|-----|----------|
-| 관리자 회원가입 | POST | /admins | 201, 400, 409 |
+| 관리자 회원가입 | POST | /admins| 201, 400, 409 |
 | 로그인 | POST | /auth/login | 200, 400, 401, 403 |
 
-<details>
-<summary><strong>관리자 회원가입</strong></summary>
+<details> <summary><strong>관리자 회원가입</strong></summary>
 
 ### Request
 
 - POST /admins/signup
 
 ```json
+ex)
 {
   "name": "홍길동",
   "email": "admin@test.com",
@@ -219,6 +224,7 @@ feature/도메인명
 - 201 Created
 
 ```json
+ex)
 {
   "id": 1,
   "name": "홍길동",
@@ -236,14 +242,14 @@ feature/도메인명
 
 </details>
 
-<details>
-<summary><strong>로그인</strong></summary>
+<details> <summary><strong>로그인</strong></summary>
 
 ### Request
 
 - POST /auth/login
 
 ```json
+ex)
 {
   "email": "admin@test.com",
   "password": "password123"
@@ -255,6 +261,7 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "adminId": 1,
   "email": "admin@test.com",
@@ -273,7 +280,6 @@ feature/도메인명
 - 403 Forbidden (승인대기, 거부, 정지, 비활성 계정)
 
 </details>
-
 </details>
 
 ---
@@ -295,8 +301,7 @@ feature/도메인명
 | 내 프로필 수정 | PATCH | /admins/me | 200, 400, 401, 409 |
 | 비밀번호 변경 | PATCH | /admins/me/password | 200, 400, 401 |
 
-<details>
-<summary><strong>관리자 목록 조회</strong></summary>
+<details> <summary><strong>관리자 목록 조회</strong></summary>
 
 ### Request
 
@@ -306,7 +311,8 @@ feature/도메인명
 
 - 200 OK
 
-```json
+```
+ex)
 {
   "content": [
     {
@@ -329,12 +335,11 @@ feature/도메인명
 
 ### Error
 - 401 Unauthorized (로그인 필요)
-- 403 Forbidden (슈퍼 관리자 권한 필요)
+- 403 Forbidden(권한 없음)
 
 </details>
 
-<details>
-<summary><strong>관리자 단건 조회</strong></summary>
+<details> <summary><strong>관리자 단건 조회</strong></summary>
 
 ### Request
 
@@ -344,7 +349,8 @@ feature/도메인명
 
 - 200 OK
 
-```json
+```
+ex)
 {
   "id": 1,
   "name": "홍길동",
@@ -359,19 +365,19 @@ feature/도메인명
 
 ### Error
 - 401 Unauthorized (로그인 필요)
-- 403 Forbidden (슈퍼 관리자 권한 필요)
 - 404 Not Found (관리자 없음)
+- 403 Forbidden(권한 없음)
 
 </details>
 
-<details>
-<summary><strong>관리자 정보 수정</strong></summary>
+<details> <summary><strong>관리자 정보 수정</strong></summary>
 
 ### Request
 
 - PATCH /admins/{adminId}
 
-```json
+```
+ex)
 {
   "name": "김관리",
   "email": "manager@test.com",
@@ -383,7 +389,8 @@ feature/도메인명
 
 - 200 OK
 
-```json
+```
+ex)
 {
   "id": 1,
   "name": "김관리",
@@ -396,14 +403,77 @@ feature/도메인명
 ### Error
 - 400 Bad Request (요청값 오류)
 - 401 Unauthorized (로그인 필요)
-- 403 Forbidden (슈퍼 관리자 권한 필요)
+- 404 Not Found (관리자 없음)
+- 403 Forbidden(권한 없음)
+- 409 Conflict (중복 이메일)
+
+</details>
+
+<details> <summary><strong>관리자 역활 변경</strong></summary>
+
+### Request
+
+- PATCH /admins/{adminId}/role
+
+
+```
+{
+  "role": "OPERATION_ADMIN"
+}
+
+### Response
+
+- 200 OK
+
+{
+ex)
+  "id": 1,
+  "role": "OPERATION_ADMIN",
+  "updatedAt": "2026-04-23T02:30:00"
+}
+
+### Error
+- 400 Bad Request (요청값 오류)
+- 401 Unauthorized (로그인 필요)
+- 403 Forbidden(권한 없음)
 - 404 Not Found (관리자 없음)
 - 409 Conflict (중복 이메일)
 
 </details>
 
-<details>
-<summary><strong>관리자 승인</strong></summary>
+<details> <summary><strong>관리자 상태 변경</strong></summary>
+
+### Request
+
+- PATCH /admins/{adminId}/status
+
+
+```
+{
+"status": "ACTIVE"
+}
+
+### Response
+
+- 200 OK
+
+{
+ex)
+"id": 1,
+"status": "ACTIVE",
+"updatedAt": "2026-04-23T02:30:00"
+}
+
+### Error
+- 400 Bad Request (요청값 오류)
+- 401 Unauthorized (로그인 필요)
+- 403 Forbidden(권한 없음)
+- 404 Not Found (관리자 없음)
+- 409 Conflict (중복 이메일)
+
+</details>
+
+<details> <summary><strong>관리자 승인</strong></summary>
 
 ### Request
 
@@ -413,7 +483,8 @@ feature/도메인명
 
 - 200 OK
 
-```json
+```
+ex)
 {
   "id": 2,
   "status": "활성",
@@ -424,19 +495,18 @@ feature/도메인명
 ### Error
 - 400 Bad Request (승인대기 상태 아님)
 - 401 Unauthorized (로그인 필요)
-- 403 Forbidden (슈퍼 관리자 권한 필요)
 - 404 Not Found (관리자 없음)
 
 </details>
 
-<details>
-<summary><strong>관리자 거부</strong></summary>
+<details> <summary><strong>관리자 거부</strong></summary>
 
 ### Request
 
 - PATCH /admins/{adminId}/reject
 
-```json
+```
+ex)
 {
   "rejectReason": "관리자 승인 조건 미충족"
 }
@@ -446,7 +516,8 @@ feature/도메인명
 
 - 200 OK
 
-```json
+```
+ex)
 {
   "id": 2,
   "status": "거부",
@@ -458,13 +529,29 @@ feature/도메인명
 ### Error
 - 400 Bad Request (거부 사유 누락, 승인대기 상태 아님)
 - 401 Unauthorized (로그인 필요)
-- 403 Forbidden (슈퍼 관리자 권한 필요)
 - 404 Not Found (관리자 없음)
 
 </details>
 
-<details>
-<summary><strong>내 프로필 조회</strong></summary>
+<details> <summary><strong>관리자 삭제</strong></summary>
+
+### Request
+
+- DELETE /admins/{adminId}
+
+### Response
+
+- 204 NO CONTENT
+
+
+### Error
+- 401 Unauthorized (로그인 필요)
+- 403 Forbidden(권한 없음)
+- 404 Not Found (관리자 없음)
+
+</details>
+
+<details> <summary><strong>내 프로필 조회</strong></summary>
 
 ### Request
 
@@ -474,7 +561,8 @@ feature/도메인명
 
 - 200 OK
 
-```json
+```
+ex)
 {
   "id": 1,
   "name": "홍길동",
@@ -488,14 +576,50 @@ feature/도메인명
 
 </details>
 
-<details>
-<summary><strong>비밀번호 변경</strong></summary>
+<details> <summary><strong>내 프로필 수정</strong></summary>
+
+### Request
+
+- PATCH /admins/me
+
+```
+ex)
+{
+  "name": "홍길동",
+  "email": "admin@test.com",
+  "phone": "010-1234-5678"
+}
+```
+
+### Response
+
+- 200 OK
+
+```
+ex)
+{
+  "id": 1,
+  "name": "홍길동",
+  "email": "admin@test.com",
+  "phone": "010-1234-5678"
+}
+```
+
+### Error
+- 400 BAD REQUEST (요청값 오류)
+- 401 Unauthorized (로그인 필요)
+- 409 CONFLICT(중복이메일)
+
+</details>
+
+<details> <summary><strong>비밀번호 변경</strong></summary>
 
 ### Request
 
 - PATCH /admins/me/password
 
-```json
+```
+ex)
 {
   "currentPassword": "password123",
   "newPassword": "newpassword123"
@@ -506,7 +630,8 @@ feature/도메인명
 
 - 200 OK
 
-```json
+```
+ex)
 {
   "message": "비밀번호가 변경되었습니다."
 }
@@ -521,6 +646,7 @@ feature/도메인명
 
 ---
 
+
 <details>
 <summary><strong>👥 고객 API</strong></summary>
 
@@ -532,33 +658,34 @@ feature/도메인명
 | 고객 상태 변경 | PATCH | /customers/{customerId}/status | 200, 400, 401, 404 |
 | 고객 삭제 | DELETE | /customers/{customerId} | 204, 401, 404 |
 
-<details>
-<summary><strong>고객 목록 조회</strong></summary>
+<details> <summary><strong>고객 목록 조회</strong></summary>
 
 ### Request
 
-- GET /customers?page=1&size=10&keyword=김고객&sortBy=createdAt&direction=desc&status=ACTIVE
+- GET /customers
 
 ### Response
 
 - 200 OK
 
 ```json
+ex)
 {
   "content": [
     {
-      "id": 1,
-      "name": "김고객",
-      "email": "customer@test.com",
-      "phone": "010-2222-3333",
-      "status": "ACTIVE",
-      "createdAt": "2026-04-23T00:00:00",
-      "totalOrderCount": 2,
-      "totalOrderAmount": 4500000
+          "id": 2,
+          "name": "이비활성",
+          "email": "inactive@test.com",
+          "phoneNumber": "010-3333-4444",
+          "customerStatus": "INACTIVE",
+          "createdAt": "2026-04-28T19:41:38",
+          "modifiedAt": "2026-04-28T19:41:38",
+          "totalOrderCount": 0,
+          "totalOrderAmount": 0
     }
   ],
-  "page": 1,
-  "size": 10,
+  "pageNumber": 1,
+  "pageSize": 10,
   "totalElements": 1,
   "totalPages": 1
 }
@@ -569,8 +696,7 @@ feature/도메인명
 
 </details>
 
-<details>
-<summary><strong>고객 단건 조회</strong></summary>
+<details> <summary><strong>고객 단건 조회</strong></summary>
 
 ### Request
 
@@ -581,15 +707,17 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "id": 1,
   "name": "김고객",
   "email": "customer@test.com",
   "phone": "010-2222-3333",
-  "status": "ACTIVE",
-  "createdAt": "2026-04-23T00:00:00",
-  "totalOrderCount": 2,
-  "totalOrderAmount": 4500000
+  "customerStatus": "활성",
+  "createdAt": "2026-04-23T00:00:00"
+  "modifiedAt": "2026-04-28T19:41:38",
+  "totalOrderCount": 0,
+  "totalOrderAmount": 0
 }
 ```
 
@@ -599,14 +727,14 @@ feature/도메인명
 
 </details>
 
-<details>
-<summary><strong>고객 수정</strong></summary>
+<details> <summary><strong>고객 수정</strong></summary>
 
 ### Request
 
 - PATCH /customers/{customerId}
 
 ```json
+ex)
 {
   "name": "김수정",
   "email": "edit@test.com",
@@ -619,12 +747,12 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
-  "id": 1,
   "name": "김수정",
   "email": "edit@test.com",
   "phone": "010-5555-6666",
-  "updatedAt": "2026-04-23T04:00:00"
+  "modifiedAt": "2026-04-23T04:00:00"
 }
 ```
 
@@ -636,16 +764,16 @@ feature/도메인명
 
 </details>
 
-<details>
-<summary><strong>고객 상태 변경</strong></summary>
+<details> <summary><strong>고객 상태 변경</strong></summary>
 
 ### Request
 
 - PATCH /customers/{customerId}/status
 
 ```json
+ex)
 {
-  "status": "SUSPENDED"
+  "status": "김수정"
 }
 ```
 
@@ -654,10 +782,9 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
-  "id": 1,
-  "status": "SUSPENDED",
-  "updatedAt": "2026-04-23T04:00:00"
+  "status": "김수정"
 }
 ```
 
@@ -665,11 +792,11 @@ feature/도메인명
 - 400 Bad Request (요청값 오류)
 - 401 Unauthorized (로그인 필요)
 - 404 Not Found (고객 없음)
+- 409 Conflict (중복 이메일)
 
 </details>
 
-<details>
-<summary><strong>고객 삭제</strong></summary>
+<details> <summary><strong>고객 삭제</strong></summary>
 
 ### Request
 
@@ -701,17 +828,17 @@ feature/도메인명
 | 상품 상태 변경 | PATCH | /products/{productId}/status | 200, 400, 401, 404 |
 | 상품 삭제 | DELETE | /products/{productId} | 204, 401, 404 |
 
-<details>
-<summary><strong>상품 등록</strong></summary>
+<details> <summary><strong>상품 등록</strong></summary>
 
 ### Request
 
 - POST /products
 
 ```json
+ex)
 {
   "name": "노트북",
-  "category": "ELECTRONICS",
+  "category": "전자기기",
   "price": 1500000,
   "stock": 10,
   "status": "ON_SALE"
@@ -723,13 +850,14 @@ feature/도메인명
 - 201 Created
 
 ```json
+ex)
 {
   "id": 1,
   "name": "노트북",
-  "category": "ELECTRONICS",
+  "category": "전자기기",
   "price": 1500000,
   "stock": 10,
-  "status": "ON_SALE",
+  "status": "판매중",
   "createdAt": "2026-04-23T00:00:00",
   "createdBy": "홍길동"
 }
@@ -741,8 +869,7 @@ feature/도메인명
 
 </details>
 
-<details>
-<summary><strong>상품 목록 조회</strong></summary>
+<details> <summary><strong>상품 목록 조회</strong></summary>
 
 ### Request
 
@@ -753,6 +880,7 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "content": [
     {
@@ -773,13 +901,9 @@ feature/도메인명
 }
 ```
 
-### Error
-- 401 Unauthorized (로그인 필요)
-
 </details>
 
-<details>
-<summary><strong>상품 단건 조회</strong></summary>
+<details> <summary><strong>상품 단건 조회</strong></summary>
 
 ### Request
 
@@ -790,33 +914,88 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "id": 1,
   "name": "노트북",
-  "category": "ELECTRONICS",
+  "category": "전자기기",
   "price": 1500000,
   "stock": 10,
   "status": "ON_SALE",
   "createdAt": "2026-04-23T00:00:00",
-  "createdByName": "홍길동",
-  "createdByEmail": "admin@test.com"
+  "adminName": "홍길동",
+  "adminEmail": "admin@test.com"
+  "latestReview": [
+            {
+                "customerName": "Kim",
+                "rating": 4,
+                "content": "디자인이 화면과 같고 예뻐요.",
+                "createdAt": "2026-04-29T11:00:00"
+            },
+            {
+                "customerName": "Kim",
+                "rating": 5,
+                "content": "재구매 의사 100% 입니다.",
+                "createdAt": "2026-04-28T08:50:40"
+            },
+            {
+                "customerName": "Kim",
+                "rating": 2,
+                "content": "배송이 너무 늦어서 아쉬웠어요.",
+                "createdAt": "2026-04-27T12:05:30"
+            }
+        ],
+  "reviewStatistics": {
+            "ratingAverage": 4.3,
+            "totalReview": 6,
+            "fiveRatings": 4,
+            "fourRatings": 1,
+            "threeRatings": 0,
+            "twoRatings": 1,
+            "oneRatings": 0
+        }
 }
 ```
 
 ### Error
+- 404 Not Found (상품 없음)
+
+</details>
+
+<details> <summary><strong>상품 수정</strong></summary>
+
+### Request
+
+- PATCH /products/{productId}
+
+```json
+ex)
+{
+  "name": "노트북"
+  "category": "전자기기"
+  "price": 1500000
+}
+```
+
+### Response
+
+- 200 OK
+
+### Error
+- 400 Bad Request (요청값 오류)
 - 401 Unauthorized (로그인 필요)
 - 404 Not Found (상품 없음)
 
 </details>
 
-<details>
-<summary><strong>상품 재고 변경</strong></summary>
+<details> <summary><strong>상품 재고 변경</strong></summary>
 
 ### Request
 
 - PATCH /products/{productId}/stock
 
 ```json
+ex)
 {
   "stock": 0
 }
@@ -827,6 +1006,7 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "id": 1,
   "stock": 0,
@@ -841,17 +1021,16 @@ feature/도메인명
 - 404 Not Found (상품 없음)
 
 </details>
-
-<details>
-<summary><strong>상품 상태 변경</strong></summary>
+<details> <summary><strong>상품 상태 변경</strong></summary>
 
 ### Request
 
 - PATCH /products/{productId}/status
 
 ```json
+ex)
 {
-  "status": "DISCOUNTED"
+  "status": "OUT_OF_STOCK"
 }
 ```
 
@@ -860,9 +1039,11 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "id": 1,
-  "status": "DISCOUNTED",
+  "stock": 0,
+  "status": "OUT_OF_STOCK",
   "updatedAt": "2026-04-23T05:00:00"
 }
 ```
@@ -873,17 +1054,17 @@ feature/도메인명
 - 404 Not Found (상품 없음)
 
 </details>
-
-<details>
-<summary><strong>상품 삭제</strong></summary>
+<details> <summary><strong>상품 삭제</strong></summary>
 
 ### Request
 
-- DELETE /products/{productId}
+- DELETE/products/{productId}
+
 
 ### Response
 
-- 204 No Content
+- 204 NO_CONTENT
+
 
 ### Error
 - 401 Unauthorized (로그인 필요)
@@ -905,14 +1086,14 @@ feature/도메인명
 | 주문 상태 변경 | PATCH | /orders/{orderId}/status | 200, 400, 401, 404 |
 | 주문 취소 | PATCH | /orders/{orderId}/cancel | 200, 400, 401, 404, 409 |
 
-<details>
-<summary><strong>주문 생성</strong></summary>
+<details> <summary><strong>주문 생성</strong></summary>
 
 ### Request
 
 - POST /orders
 
 ```json
+ex)
 {
   "customerId": 1,
   "productId": 1,
@@ -925,6 +1106,7 @@ feature/도메인명
 - 201 Created
 
 ```json
+ex)
 {
   "id": 1,
   "orderNumber": "ORD-20260423-0001",
@@ -932,7 +1114,7 @@ feature/도메인명
   "productName": "노트북",
   "quantity": 2,
   "totalPrice": 3000000,
-  "status": "READY",
+  "status": "준비중",
   "createdAt": "2026-04-23T06:00:00",
   "createdBy": "홍길동"
 }
@@ -946,18 +1128,18 @@ feature/도메인명
 
 </details>
 
-<details>
-<summary><strong>주문 목록 조회</strong></summary>
+<details> <summary><strong>주문 목록 조회</strong></summary>
 
 ### Request
 
-- GET /orders?page=1&size=10&keyword=ORD-20260423-0001&sortBy=createdAt&direction=desc&status=READY
+- GET /orders?page=1&size=10&keyword=ORD-20260423-0001&sortBy=createdAt&direction=DESC&status=READY
 
 ### Response
 
 - 200 OK
 
 ```json
+ex)
 {
   "content": [
     {
@@ -979,13 +1161,9 @@ feature/도메인명
 }
 ```
 
-### Error
-- 401 Unauthorized (로그인 필요)
-
 </details>
 
-<details>
-<summary><strong>주문 단건 조회</strong></summary>
+<details> <summary><strong>주문 단건 조회</strong></summary>
 
 ### Request
 
@@ -996,6 +1174,7 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "id": 1,
   "orderNumber": "ORD-20260423-0001",
@@ -1013,19 +1192,17 @@ feature/도메인명
 ```
 
 ### Error
-- 401 Unauthorized (로그인 필요)
 - 404 Not Found (주문 없음)
 
 </details>
 
-<details>
-<summary><strong>주문 상태 변경</strong></summary>
+<details> <summary><strong>주문 상태 변경</strong></summary>
 
 ### Request
 
-- PATCH /orders/{orderId}/status
-
+- PATCH /orders/{orderId}
 ```json
+ex)
 {
   "status": "DELIVERY"
 }
@@ -1036,6 +1213,7 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "id": 1,
   "orderNumber": "ORD-20260423-0001",
@@ -1051,14 +1229,14 @@ feature/도메인명
 
 </details>
 
-<details>
-<summary><strong>주문 취소</strong></summary>
+<details> <summary><strong>주문 취소</strong></summary>
 
 ### Request
 
 - PATCH /orders/{orderId}/cancel
 
 ```json
+ex)
 {
   "cancelReason": "고객 요청 취소"
 }
@@ -1069,12 +1247,13 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "id": 1,
   "orderNumber": "ORD-20260423-0001",
   "status": "CANCEL",
   "cancelReason": "고객 요청 취소",
-  "updatedAt": "2026-04-23T07:10:00"
+  "modifiedAt": "2026-04-23T07:10:00"
 }
 ```
 
@@ -1098,8 +1277,7 @@ feature/도메인명
 | 리뷰 단건 조회 | GET | /reviews/{reviewId} | 200, 401, 404 |
 | 리뷰 삭제 | DELETE | /reviews/{reviewId} | 204, 401, 404 |
 
-<details>
-<summary><strong>리뷰 목록 조회</strong></summary>
+<details> <summary><strong>리뷰 목록 조회</strong></summary>
 
 ### Request
 
@@ -1110,6 +1288,7 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "content": [
     {
@@ -1129,13 +1308,9 @@ feature/도메인명
 }
 ```
 
-### Error
-- 401 Unauthorized (로그인 필요)
-
 </details>
 
-<details>
-<summary><strong>리뷰 단건 조회</strong></summary>
+<details> <summary><strong>리뷰 단건 조회</strong></summary>
 
 ### Request
 
@@ -1146,6 +1321,7 @@ feature/도메인명
 - 200 OK
 
 ```json
+ex)
 {
   "id": 1,
   "productName": "노트북",
@@ -1158,13 +1334,11 @@ feature/도메인명
 ```
 
 ### Error
-- 401 Unauthorized (로그인 필요)
 - 404 Not Found (리뷰 없음)
 
 </details>
 
-<details>
-<summary><strong>리뷰 삭제</strong></summary>
+<details> <summary><strong>리뷰 삭제</strong></summary>
 
 ### Request
 
@@ -1200,7 +1374,6 @@ feature/도메인명
 ### Response
 
 - 200 OK
-
 ```json
 {
   "summaryDto": {
@@ -1252,3 +1425,5 @@ feature/도메인명
 
 </details>
 </details>
+  
+  
