@@ -1,7 +1,5 @@
 # 🛠️ Trouble Shooting: 리뷰 관리 (소프트 삭제 조회 처리)
 
-> **태그:** `#Backend` `#JPA` `#Soft-Delete` `#Optimization`
-
 ---
 
 ## 📌 배경 (Background)

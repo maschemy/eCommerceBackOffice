@@ -1,7 +1,5 @@
 # 🛠️ Trouble Shooting: JOIN 방식으로 인한 주문 없는 고객 누락
 
-> **태그:** `#Backend` `#JPA` `#JPQL` `#SQL` `#JOIN`
-
 ---
 
 ## 📌 배경 (Background)
