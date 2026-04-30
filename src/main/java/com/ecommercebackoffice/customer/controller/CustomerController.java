@@ -34,7 +34,7 @@ public class CustomerController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<Page<SearchCustomerResponseDto>> getAllCustomer(
+    public ResponseEntity<PageResponseDto<SearchCustomerResponseDto>> getAllCustomer(
             @AuthenticationPrincipal LoginAdmin loginAdmin,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) CustomerStatus status,
@@ -60,7 +60,7 @@ public class CustomerController {
     }
 
     /**
-     * 고객 상정보 수정(이름, 이메일, 전화번호)
+     * 고객 정보 수정(이름, 이메일, 전화번호)
      * @param request
      * @param customerId
      * @return

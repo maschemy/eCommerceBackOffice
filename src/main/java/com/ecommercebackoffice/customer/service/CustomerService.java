@@ -33,7 +33,7 @@ public class CustomerService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Page<SearchCustomerResponseDto> findAll(
+    public PageResponseDto<SearchCustomerResponseDto> findAll(
             String keyword, CustomerStatus status, int page,
             int size, String sortBy, String direction
     ) {
@@ -46,7 +46,7 @@ public class CustomerService {
 
         Page<Object[]> customers = customerRepository.findAllWithFilter(keyword, status, pageable);
 
-        return customers.map(row -> {
+        Page<SearchCustomerResponseDto> result = customers.map(row -> {
             Customer customer = (Customer) row[0];
             Long totalOrderCount = ((Number) row[1]).longValue(); // row[1]를 Number로 캐시틍-> .longValue()로 Long으로 변환
             Long totalOrderAmount = ((Number) row[2]).longValue();
@@ -63,6 +63,7 @@ public class CustomerService {
                     totalOrderAmount
             );
         });
+        return new PageResponseDto<>(result);
     }
 
     /**
