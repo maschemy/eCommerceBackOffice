@@ -106,8 +106,10 @@ public class AdminService {
     public UpdateAdminResponseDto update(Long adminId, UpdateAdminRequestDto request) {
 
         Admin admin = findAdminId(adminId);
-        if (!admin.getEmail().equals(request.getEmail()) && adminRepository.existsByEmail(request.getEmail())) {
-            throw new UsedEmailException("이미 존재하는 이메일입니다."); //회원가입때 중복검사와다르다
+        long count = adminRepository.countByEmailIncludeDeleted(request.getEmail());
+
+        if (!admin.getEmail().equals(request.getEmail()) && count > 0) {
+            throw new UsedEmailException("이미 존재하는 이메일입니다.");
         }
 
         admin.adminUpdate(request.getName(), request.getEmail(), request.getPhoneNumber());

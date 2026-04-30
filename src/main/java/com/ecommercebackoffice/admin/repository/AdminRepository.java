@@ -16,6 +16,9 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
     Boolean existsByEmail(String email);
 
+    @Query(value = "SELECT COUNT(*) FROM admins WHERE email = :email", nativeQuery = true)
+    long countByEmailIncludeDeleted(@Param("email") String email);
+
     @Query("""
     SELECT a
     FROM Admin a
